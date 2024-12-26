@@ -58,7 +58,7 @@ class Fzf
         $progPath = $vendorPath.'/bin/fzf';
 
         if (! file_exists($progPath)) {
-            (new Downloader)->handle();
+            throw new \Exception('Binary is not downloaded');
         }
 
         $process = new Process(

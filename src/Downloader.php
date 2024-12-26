@@ -10,7 +10,7 @@ class Downloader
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public static function installLatestRelease(): void
     {
         // GitHub API URL for fzf releases
         $apiUrl = 'https://api.github.com/repos/junegunn/fzf/releases/latest';
