@@ -3,13 +3,13 @@
 namespace Mantas6\FzfPhp;
 
 use Composer\Autoload\ClassLoader;
-use Exception;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 
 class Fzf
 {
     protected $options = [];
+
     protected array $command = [];
 
     public function __construct()
@@ -40,7 +40,7 @@ class Fzf
 
     public function run(): string
     {
-        $input = new InputStream();
+        $input = new InputStream;
 
         $command = [];
 
@@ -57,7 +57,7 @@ class Fzf
         $vendorPath = array_keys(ClassLoader::getRegisteredLoaders())[0];
         $progPath = $vendorPath.'/bin/fzf';
 
-        if (!file_exists($progPath)) {
+        if (! file_exists($progPath)) {
             (new Downloader)->handle();
         }
 
@@ -81,7 +81,7 @@ class Fzf
 
         $error = $process->getErrorOutput();
 
-        if ($error) {
+        if ($error !== '' && $error !== '0') {
             throw new \Exception($error);
         }
 
