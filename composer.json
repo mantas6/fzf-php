@@ -1,12 +1,12 @@
 {
-    "name": "nunomaduro/skeleton-php",
+    "name": "mantas6/fzf-php",
     "description": "A skeleton repository for my packages",
     "keywords": ["php", "skeleton", "package"],
     "license": "MIT",
     "authors": [
         {
-            "name": "Nuno Maduro",
-            "email": "enunomaduro@gmail.com"
+            "name": "Mantas",
+            "email": "6524518+mantas6@users.noreply.github.com"
         }
     ],
     "require": {
@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "NunoMaduro\\SkeletonPhp\\": "src/"
+            "Mantas6\\FzfPhp\\": "src/"
         }
     },
     "autoload-dev": {
