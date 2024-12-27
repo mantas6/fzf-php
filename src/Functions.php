@@ -7,7 +7,7 @@ namespace FzfPhp;
 if (! function_exists(\FzfPhp\fzf::class)) {
     function fzf(array|callable $options): string
     {
-        return (new Fzf)
+        return (new FuzzyFinder)
             ->options($options)
             ->run();
     }

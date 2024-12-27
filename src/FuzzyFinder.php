@@ -6,7 +6,7 @@ use Composer\Autoload\ClassLoader;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 
-class Fzf
+class FuzzyFinder
 {
     protected $options = [];
 
