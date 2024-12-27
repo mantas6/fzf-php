@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Mantas6\FzfPhp\Downloader;
+
+$vendorPath = dirname(__DIR__, 4) . '/vendor/autoload.php';
+$localPath = dirname(__DIR__) . '/vendor/autoload.php';
+
+if (file_exists($vendorPath)) {
+    include_once $vendorPath;
+    $autoloadPath = $vendorPath;
+} else {
+    include_once $localPath;
+    $autoloadPath = $localPath;
+}
+
+Downloader::installLatestRelease();
