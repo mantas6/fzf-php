@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Mantas6\\FzfPhp\\": "src/"
+            "FzfPhp\\": "src/"
         }
     },
     "autoload-dev": {

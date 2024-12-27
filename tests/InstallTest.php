@@ -1,6 +1,6 @@
 <?php
 
-use Mantas6\FzfPhp\Downloader;
+use FzfPhp\Downloader;
 
 it('installs fzf binary', function (): void {
     $binPath = './vendor/bin/fzf';
