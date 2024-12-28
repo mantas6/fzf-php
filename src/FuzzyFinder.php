@@ -85,7 +85,7 @@ class FuzzyFinder
 
     protected static function resolveBinaryPath(): string
     {
-        if (str_starts_with(static::$binaryPath, './')) {
+        if (str_starts_with((string) static::$binaryPath, './')) {
             $vendorPath = dirname(
                 array_keys(ClassLoader::getRegisteredLoaders())[0]
             );

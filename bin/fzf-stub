@@ -11,20 +11,34 @@ $stub = new class {
     {
         $this->args = $args;
 
-        $mode = ucfirst($args[1] ?? 'default');
+        $mode = ucfirst(
+            str_replace('-', '', $args[1] ?? 'default')
+        );
 
-        return $this->{"mode$mode"}();
+        return $this->{"$mode"}();
     }
 
-    private function modeDefault(): void
+    private function stubDefault(): void
     {
         $this->output = implode(' ', $this->args);
     }
 
-
-    private function modeError(): void
+    private function stubError(): void
     {
         $this->exitCode = 1;
+    }
+
+    private function version(): void
+    {
+        $this->output = 'v10';
+    }
+
+    private function stubFirst(): void
+    {
+        $stream = fopen("php://stdin","r");
+        $input = stream_get_contents($stream);
+
+        $this->output = explode(PHP_EOL, $input)[0];
     }
 };
 
