@@ -12,7 +12,7 @@ class FuzzyFinder
 
     protected array $command = [];
 
-    protected static $binaryPath = './bin/fzf';
+    protected static $binaryPath = './vendor/bin/fzf';
 
     public function __construct()
     {
@@ -91,8 +91,11 @@ class FuzzyFinder
     protected static function resolveBinaryPath(): string
     {
         if (str_starts_with(static::$binaryPath, './')) {
-            $vendorPath = array_keys(ClassLoader::getRegisteredLoaders())[0];
-            return str_replace('./', $vendorPath, static::$binaryPath);
+            $vendorPath = dirname(
+                array_keys(ClassLoader::getRegisteredLoaders())[0]
+            );
+
+            return str_replace('./', $vendorPath.'/', static::$binaryPath);
         }
 
         return static::$binaryPath;
