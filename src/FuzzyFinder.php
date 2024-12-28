@@ -14,11 +14,6 @@ class FuzzyFinder
 
     protected static $binaryPath = './vendor/bin/fzf';
 
-    public function __construct()
-    {
-        //
-    }
-
     public static function setBinaryPath(string $path): void
     {
         static::$binaryPath = $path;
