@@ -24,7 +24,10 @@
     "autoload": {
         "psr-4": {
             "FzfPhp\\": "src/"
-        }
+        },
+        "files": [
+            "src/Functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

@@ -1,6 +1,9 @@
 <?php
 
 use FzfPhp\Downloader;
+use FzfPhp\FuzzyFinder;
+
+use function FzfPhp\fzf;
 
 it('installs fzf binary', function (): void {
     $binPath = './vendor/bin/fzf';
@@ -12,4 +15,10 @@ it('installs fzf binary', function (): void {
 
     expect(file_exists($binPath))->toBe(true);
     expect(filesize($binPath))->not->toBe(0);
+
+    $versionInfo = (new FuzzyFinder)
+        ->command(['version' => true])
+        ->run();
+
+    expect($versionInfo)->not->toBeEmpty();
 });

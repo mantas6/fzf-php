@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FzfPhp;
 
-if (! function_exists(\FzfPhp\fzf::class)) {
+if (!function_exists('FzfPhp\fzf')) {
     function fzf(array|callable $options): string
     {
         return (new FuzzyFinder)
