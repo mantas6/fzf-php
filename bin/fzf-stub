@@ -1,4 +1,34 @@
 #!/usr/bin/env php
 <?php
 
-echo "1\n";
+$stub = new class {
+    protected array $args = [];
+
+    public int $exitCode = 0;
+    public string $output = '';
+
+    public function __invoke(array $args)
+    {
+        $this->args = $args;
+
+        $mode = ucfirst($args[1] ?? 'default');
+
+        return $this->{"mode$mode"}();
+    }
+
+    private function modeDefault(): void
+    {
+        $this->output = implode(' ', $this->args);
+    }
+
+
+    private function modeError(): void
+    {
+        $this->exitCode = 1;
+    }
+};
+
+$stub($argv);
+
+echo $stub->output;
+exit($stub->exitCode);
