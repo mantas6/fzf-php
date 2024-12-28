@@ -12,9 +12,16 @@ class FuzzyFinder
 
     protected array $command = [];
 
+    protected static $binaryPath = './bin/fzf';
+
     public function __construct()
     {
         //
+    }
+
+    public static function setBinaryPath(string $path): void
+    {
+        static::$binaryPath = $path;
     }
 
     public function command(array $command): self
@@ -54,15 +61,8 @@ class FuzzyFinder
             }
         }
 
-        $vendorPath = array_keys(ClassLoader::getRegisteredLoaders())[0];
-        $progPath = $vendorPath.'/bin/fzf';
-
-        if (! file_exists($progPath)) {
-            throw new \Exception('Binary is not downloaded');
-        }
-
         $process = new Process(
-            command: [$progPath, ...$command],
+            command: [static::resolveBinaryPath(), ...$command],
             input: $input,
             timeout: 0,
         );
@@ -86,5 +86,15 @@ class FuzzyFinder
         }
 
         return $process->getOutput();
+    }
+
+    protected static function resolveBinaryPath(): string
+    {
+        if (str_starts_with(static::$binaryPath, './')) {
+            $vendorPath = array_keys(ClassLoader::getRegisteredLoaders())[0];
+            return str_replace('./', $vendorPath, static::$binaryPath);
+        }
+
+        return static::$binaryPath;
     }
 }
