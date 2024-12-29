@@ -12,7 +12,7 @@ $stub = new class {
         $this->args = $args;
 
         $mode = ucfirst(
-            str_replace('-', '', $args[1] ?? 'default')
+            str_replace('-', '', $args[1] ?? 'stubDefault')
         );
 
         return $this->{"$mode"}();
