@@ -12,11 +12,11 @@ class FuzzyFinder
 
     protected array $command = [];
 
-    protected static $binaryPath = './vendor/bin/fzf';
+    protected static $defaultCommand = './vendor/bin/fzf';
 
-    public static function setBinaryPath(string $path): void
+    public static function defaultCommand(string $cmd): void
     {
-        static::$binaryPath = $path;
+        static::$defaultCommand = $cmd;
     }
 
     public function command(array $command): self
@@ -57,7 +57,7 @@ class FuzzyFinder
         }
 
         $process = new Process(
-            command: [static::resolveBinaryPath(), ...$command],
+            command: [static::resolveDefaultCommand(), ...$command],
             input: $input,
             timeout: 0,
         );
@@ -83,16 +83,16 @@ class FuzzyFinder
         return $process->getOutput();
     }
 
-    protected static function resolveBinaryPath(): string
+    protected static function resolveDefaultCommand(): string
     {
-        if (str_starts_with((string) static::$binaryPath, './')) {
+        if (str_starts_with((string) static::$defaultCommand, './')) {
             $vendorPath = dirname(
                 array_keys(ClassLoader::getRegisteredLoaders())[0]
             );
 
-            return str_replace('./', $vendorPath.'/', static::$binaryPath);
+            return str_replace('./', $vendorPath.'/', static::$defaultCommand);
         }
 
-        return static::$binaryPath;
+        return static::$defaultCommand;
     }
 }
