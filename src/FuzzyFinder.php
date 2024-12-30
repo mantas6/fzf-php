@@ -12,6 +12,9 @@ class FuzzyFinder
     /** @var array <string, mixed> */
     protected array $arguments = [];
 
+    /** @var array <string, mixed> */
+    protected static array $defaultArguments = [];
+
     protected static string $defaultCommand = './vendor/bin/fzf';
 
     protected static ?string $command = null;
@@ -27,7 +30,15 @@ class FuzzyFinder
     }
 
     /**
-     * @param array <string, mixed>  $args
+     * @param array <string, mixed> $args
+     */
+    public static function usingDefaultArguments(array $args): void
+    {
+        static::$defaultArguments = $args;
+    }
+
+    /**
+     * @param array <string, mixed> $args
      */
     public function arguments(array $args): self
     {
@@ -82,7 +93,7 @@ class FuzzyFinder
     {
         $arguments = [];
 
-        foreach ($this->arguments as $key => $value) {
+        foreach ([...static::$defaultArguments, ...$this->arguments] as $key => $value) {
             if ($value !== false) {
                 $arguments[] = strlen($key) > 1 ? "--$key" : "-$key";
 

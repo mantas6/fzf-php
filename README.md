@@ -79,3 +79,13 @@ use Mantas6\FzfPhp\FuzzyFinder;
 
 FuzzyFinder::usingCommand('/usr/bin/env fzf');
 ```
+
+Set global arguments for all prompts:
+```php
+<?php
+// YourAppServiceProvider.php
+
+use Mantas6\FzfPhp\FuzzyFinder;
+
+FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
+```
