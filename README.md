@@ -30,12 +30,27 @@ Download the `fzf` binary:
 
 ### Usage
 
-Retrieve selected options out of a given list:
+Retrieve a single option from a list:
 ```php
 <?php
 use function Mantas6\FzfPhp\fzf;
 
 $selected = fzf(['Apple', 'Orange', 'Grapefruit']);
+
+// 'Apple'
+```
+
+Retrieve multiple options from a list:
+```php
+<?php
+use function Mantas6\FzfPhp\fzf;
+
+$selected = fzf(
+    options: ['Apple', 'Orange', 'Grapefruit'],
+    arguments: ['multi' => true],
+);
+
+// ['Apple', 'Orange']
 ```
 
 Pass arguments to configure `fzf` itself:

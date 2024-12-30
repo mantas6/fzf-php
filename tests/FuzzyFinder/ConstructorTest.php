@@ -10,7 +10,7 @@ afterAll(fn () => FuzzyFinder::usingDefaultCommand());
 it('works in constructor mode', function (): void {
     $selection = fzf(['Apple', 'Orange', 'Grapefruit']);
 
-    expect($selection)->toContain('Grapefruit');
+    expect($selection)->not->toBeEmpty();
 });
 
 it('passes keyed arguments', function (): void {
@@ -49,4 +49,13 @@ it('passes single letter keyed arguments', function (): void {
 
     expect($selection)
         ->toContain(' -d :');
+});
+
+it('returns array in multi mode with long flag', function (): void {
+    $selection = fzf(
+        options: ['Apple', 'Orange', 'Grapefruit'],
+        arguments: ['multi' => true],
+    );
+
+    expect($selection)->toBeArray();
 });

@@ -38,8 +38,9 @@ class FuzzyFinder
 
     /**
      * @param array <int, string> $options
+     * @return string|array <int, string>
      */
-    public function ask(array $options = []): string
+    public function ask(array $options = []): string|array
     {
         $input = new InputStream;
 
@@ -62,7 +63,16 @@ class FuzzyFinder
             throw new ProcessException($error !== '' && $error !== '0' ? $error : "Process exited with code $exitCode");
         }
 
-        return $process->getOutput();
+        $selected = explode(
+            PHP_EOL,
+            $process->getOutput()
+        );
+
+        if (!empty($this->arguments['multi']) || !empty($this->arguments['m'])) {
+            return $selected;
+        }
+
+        return $selected[0];
     }
 
     /**
