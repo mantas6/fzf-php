@@ -1,6 +1,6 @@
 <?php
 
-namespace FzfPhp;
+namespace Mantas6\FzfPhp;
 
 use Exception;
 use PharData;

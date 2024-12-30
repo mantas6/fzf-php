@@ -1,7 +1,7 @@
 <?php
 
-use FzfPhp\Downloader;
-use FzfPhp\FuzzyFinder;
+use Mantas6\FzfPhp\Downloader;
+use Mantas6\FzfPhp\FuzzyFinder;
 
 it('installs fzf binary', function (): void {
     $binPath = './vendor/bin/fzf';

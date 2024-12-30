@@ -1,9 +1,9 @@
 <?php
 
-namespace FzfPhp;
+namespace Mantas6\FzfPhp;
 
 use Composer\Autoload\ClassLoader;
-use FzfPhp\Exceptions\ProcessException;
+use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 

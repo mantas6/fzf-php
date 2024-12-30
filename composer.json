@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "FzfPhp\\": "src/"
+            "Mantas6\\FzfPhp\\": "src/"
         },
         "files": [
             "src/Functions.php"

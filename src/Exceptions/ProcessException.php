@@ -1,6 +1,6 @@
 <?php
 
-namespace FzfPhp\Exceptions;
+namespace Mantas6\FzfPhp\Exceptions;
 
 use Exception;
 

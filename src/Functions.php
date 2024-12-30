@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FzfPhp;
+namespace Mantas6\FzfPhp;
 
 if (!function_exists('FzfPhp\fzf')) {
     /**

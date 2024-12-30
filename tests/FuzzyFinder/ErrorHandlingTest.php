@@ -1,9 +1,9 @@
 <?php
 
-use FzfPhp\Exceptions\ProcessException;
-use FzfPhp\FuzzyFinder;
+use Mantas6\FzfPhp\Exceptions\ProcessException;
+use Mantas6\FzfPhp\FuzzyFinder;
 
-use function FzfPhp\fzf;
+use function Mantas6\FzfPhp\fzf;
 
 beforeAll(fn () => FuzzyFinder::usingCommand('./bin/fzf-fake'));
 afterAll(fn () => FuzzyFinder::usingDefaultCommand());
