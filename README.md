@@ -13,6 +13,7 @@ This package allows you to create `fzf` powered menus straight from PHP code.
 
 ### Features
 - Automatic `fzf` binary download
+- Inline `fzf` configuration
 
 ### Installation
 
