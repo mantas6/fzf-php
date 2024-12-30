@@ -8,47 +8,45 @@ use Symfony\Component\Process\Process;
 
 class FuzzyFinder
 {
-    protected $options = [];
+    /** @var array <string, mixed> */
+    protected array $arguments = [];
 
-    protected array $command = [];
+    protected static string $defaultCommand = './vendor/bin/fzf';
 
-    protected static $defaultCommand = './vendor/bin/fzf';
+    protected static ?string $command = null;
 
-    public static function defaultCommand(string $cmd): void
+    public static function usingCommand(string $cmd): void
     {
-        static::$defaultCommand = $cmd;
+        static::$command = $cmd;
     }
 
-    public function command(array $command): self
+    public static function usingDefaultCommand(): void
     {
-        $this->command = $command;
+        static::$command = static::$defaultCommand;
+    }
+
+    /**
+     * @param  array <string, mixed>  $args
+     */
+    public function arguments(array $args): self
+    {
+        $this->arguments = $args;
 
         return $this;
     }
 
-    public function options(array|callable $options): self
-    {
-        $this->options = $options;
-
-        return $this;
-    }
-
-    public function __call($name, $arguments): self
-    {
-        $this->command[$name] = $arguments[0] ?? true;
-
-        return $this;
-    }
-
-    public function run(): string
+    /**
+     * @param  array <int, string>  $options
+     */
+    public function ask(array $options = []): string
     {
         $input = new InputStream;
 
         $command = [];
 
-        foreach ($this->command as $key => $value) {
+        foreach ($this->arguments as $key => $value) {
             if ($value !== false) {
-                $command[] = "--$key";
+                $command[] = strlen($key) > 1 ? "--$key" : "-$key";
 
                 if ($value !== true) {
                     $command[] = $value;
@@ -57,16 +55,12 @@ class FuzzyFinder
         }
 
         $process = new Process(
-            command: [static::resolveDefaultCommand(), ...$command],
+            command: [static::resolveCommand(), ...$command],
             input: $input,
             timeout: 0,
         );
 
         $process->start();
-
-        $options = is_callable($this->options)
-            ? call_user_func($this->options)
-            : $this->options;
 
         $input->write(implode("\n", $options));
         $input->close();
@@ -83,16 +77,16 @@ class FuzzyFinder
         return $process->getOutput();
     }
 
-    protected static function resolveDefaultCommand(): string
+    protected static function resolveCommand(): string
     {
-        if (str_starts_with((string) static::$defaultCommand, './')) {
-            $vendorPath = dirname(
-                array_keys(ClassLoader::getRegisteredLoaders())[0]
-            );
-
-            return str_replace('./', $vendorPath.'/', static::$defaultCommand);
+        if (static::$command !== null && static::$command !== '' && static::$command !== '0') {
+            return static::$command;
         }
 
-        return static::$defaultCommand;
+        $basePath = dirname(
+            array_keys(ClassLoader::getRegisteredLoaders())[0]
+        );
+
+        return $basePath.'/'.static::$defaultCommand;
     }
 }

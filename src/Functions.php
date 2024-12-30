@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace FzfPhp;
 
 if (! function_exists('FzfPhp\fzf')) {
-    function fzf(array|callable $options = null): FuzzyFinder|string
+    /**
+     * @param  array <int, string>  $options
+     * @param  array <string, mixed>  $arguments
+     */
+    function fzf(array $options = [], array $arguments = []): string
     {
-        if ($options === null) {
-            return new FuzzyFinder;
-        }
-
         return (new FuzzyFinder)
-            ->options($options)
-            ->run();
+            ->arguments($arguments)
+            ->ask($options);
     }
 }
