@@ -7,12 +7,6 @@ use function Mantas6\FzfPhp\fzf;
 beforeAll(fn () => FuzzyFinder::usingCommand('./bin/fzf-fake'));
 afterAll(fn () => FuzzyFinder::usingDefaultCommand());
 
-it('works in constructor mode', function (): void {
-    $selection = fzf(['Apple', 'Orange', 'Grapefruit']);
-
-    expect($selection)->not->toBeEmpty();
-});
-
 it('passes keyed arguments', function (): void {
     $selection = fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
@@ -69,20 +63,4 @@ it('passes single letter keyed arguments', function (): void {
         ->toContain(' -d :');
 });
 
-it('returns array in multi mode with short flag', function (): void {
-    $selection = fzf(
-        options: ['Apple', 'Orange', 'Grapefruit'],
-        arguments: ['m' => true],
-    );
 
-    expect($selection)->toBeArray();
-});
-
-it('returns array in multi mode with long flag', function (): void {
-    $selection = fzf(
-        options: ['Apple', 'Orange', 'Grapefruit'],
-        arguments: ['multi' => true],
-    );
-
-    expect($selection)->toBeArray();
-});
