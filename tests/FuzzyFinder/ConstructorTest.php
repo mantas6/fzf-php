@@ -69,6 +69,15 @@ it('passes single letter keyed arguments', function (): void {
         ->toContain(' -d :');
 });
 
+it('returns array in multi mode with short flag', function (): void {
+    $selection = fzf(
+        options: ['Apple', 'Orange', 'Grapefruit'],
+        arguments: ['m' => true],
+    );
+
+    expect($selection)->toBeArray();
+});
+
 it('returns array in multi mode with long flag', function (): void {
     $selection = fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
