@@ -22,15 +22,22 @@ class Downloader
         $assets = $releaseData['assets'] ?? [];
         $downloadUrl = null;
 
+        $arch = match ($arch = php_uname('m')) {
+            'x86_64' => 'amd64',
+            default => $arch,
+        };
+
+        $system = strtolower(php_uname('s'));
+
         foreach ($assets as $asset) {
-            if (str_contains((string) $asset['name'], php_uname('m')) && str_contains((string) $asset['name'], strtolower(php_uname('s')))) {
+            if (str_contains((string) $asset['name'], $arch) && str_contains((string) $asset['name'], $system)) {
                 $downloadUrl = $asset['browser_download_url'];
                 break;
             }
         }
 
         if (!$downloadUrl) {
-            throw new Exception('No suitable binary found for the current system');
+            throw new Exception("No suitable binary found for the current system: $arch $system");
         }
 
         // Download the binary with progress bar
