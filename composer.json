@@ -1,7 +1,7 @@
 {
     "name": "mantas6/fzf-php",
-    "description": "A skeleton repository for my packages",
-    "keywords": ["php", "skeleton", "package"],
+    "description": "Interactive fzf terminal menus in PHP",
+    "keywords": ["php", "fzf", "package", "terminal", "tui", "prompt"],
     "license": "MIT",
     "authors": [
         {
