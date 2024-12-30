@@ -1,0 +1,7 @@
+{
+    "rules": {
+        "not_operator_with_successor_space": false,
+        "concat_space": false,
+        "class_attributes_separation": false
+    }
+}

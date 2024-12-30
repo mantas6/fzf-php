@@ -29,7 +29,7 @@ class Downloader
             }
         }
 
-        if (! $downloadUrl) {
+        if (!$downloadUrl) {
             throw new Exception('No suitable binary found for the current system');
         }
 

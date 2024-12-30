@@ -5,7 +5,7 @@ use FzfPhp\FuzzyFinder;
 
 it('installs fzf binary', function (): void {
     $binPath = './vendor/bin/fzf';
-    if (! file_exists($binPath)) {
+    if (!file_exists($binPath)) {
         Downloader::installLatestRelease();
     }
 

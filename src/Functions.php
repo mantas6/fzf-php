@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace FzfPhp;
 
-if (! function_exists('FzfPhp\fzf')) {
+if (!function_exists('FzfPhp\fzf')) {
     /**
      * @param  array <int, string>  $options
      * @param  array <string, mixed>  $arguments

@@ -43,38 +43,46 @@ class FuzzyFinder
     {
         $input = new InputStream;
 
-        $command = [];
-
-        foreach ($this->arguments as $key => $value) {
-            if ($value !== false) {
-                $command[] = strlen($key) > 1 ? "--$key" : "-$key";
-
-                if ($value !== true) {
-                    $command[] = $value;
-                }
-            }
-        }
-
         $process = new Process(
-            command: [static::resolveCommand(), ...$command],
+            command: [static::resolveCommand(), ...$this->buildArguments()],
             input: $input,
             timeout: 0,
         );
 
         $process->start();
 
-        $input->write(implode("\n", $options));
+        $input->write(implode(PHP_EOL, $options));
         $input->close();
         $process->wait();
 
         $exitCode = $process->getExitCode();
         $error = $process->getErrorOutput();
 
-        if ($exitCode !== 0 && ! in_array($exitCode, [1, 130])) {
+        if ($exitCode !== 0 && !in_array($exitCode, [1, 130])) {
             throw new ProcessException($error !== '' && $error !== '0' ? $error : "Process exited with code $exitCode");
         }
 
         return $process->getOutput();
+    }
+
+    /**
+     * @param  array <int, string>
+     */
+    protected function buildArguments(): array
+    {
+        $arguments = [];
+
+        foreach ($this->arguments as $key => $value) {
+            if ($value !== false) {
+                $arguments[] = strlen($key) > 1 ? "--$key" : "-$key";
+
+                if ($value !== true) {
+                    $arguments[] = $value;
+                }
+            }
+        }
+
+        return $arguments;
     }
 
     protected static function resolveCommand(): string
