@@ -4,12 +4,12 @@ use Mantas6\FzfPhp\FuzzyFinder;
 
 use function Mantas6\FzfPhp\fzf;
 
-beforeAll(fn() => FuzzyFinder::usingCommand('./bin/fzf-fake'));
-afterAll(fn() => FuzzyFinder::usingDefaultCommand());
+beforeAll(fn () => FuzzyFinder::usingCommand('./bin/fzf-fake'));
+afterAll(fn () => FuzzyFinder::usingDefaultCommand());
 
-afterEach(fn() => FuzzyFinder::usingDefaultArguments([]));
+afterEach(fn () => FuzzyFinder::usingDefaultArguments([]));
 
-it('adds default arguments when set', function () {
+it('adds default arguments when set', function (): void {
     FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
 
     $selection = fzf(['Apple', 'Orange', 'Grapefruit']);
@@ -17,7 +17,7 @@ it('adds default arguments when set', function () {
     expect($selection)->toContain(' --pointer ->');
 });
 
-it('adds to override default arguments', function () {
+it('adds to override default arguments', function (): void {
     FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
 
     $selection = fzf(

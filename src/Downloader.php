@@ -48,8 +48,8 @@ class Downloader
     }
 
     /**
-    * @return null|array<string, array{assets: array<string, string>}>
-    */
+     * @return null|array<string, array{assets: array<string, string>}>
+     */
     protected static function fetchLatestRelease(string $url): ?array
     {
         $ch = curl_init();

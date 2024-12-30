@@ -62,5 +62,3 @@ it('passes single letter keyed arguments', function (): void {
     expect($selection)
         ->toContain(' -d :');
 });
-
-

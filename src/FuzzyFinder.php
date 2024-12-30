@@ -30,7 +30,7 @@ class FuzzyFinder
     }
 
     /**
-     * @param array <string, mixed> $args
+     * @param  array <string, mixed>  $args
      */
     public static function usingDefaultArguments(array $args): void
     {
@@ -38,7 +38,7 @@ class FuzzyFinder
     }
 
     /**
-     * @param array <string, mixed> $args
+     * @param  array <string, mixed>  $args
      */
     public function arguments(array $args): self
     {
@@ -48,7 +48,7 @@ class FuzzyFinder
     }
 
     /**
-     * @param array <int, string> $options
+     * @param  array <int, string>  $options
      * @return string|array <int, string>
      */
     public function ask(array $options = []): string|array
