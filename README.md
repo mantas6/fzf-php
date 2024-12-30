@@ -53,14 +53,18 @@ $selected = fzf(
 // ['Apple', 'Orange']
 ```
 
-Pass arguments to configure `fzf` itself:
+Or pass any other `fzf` configuration arguments:
 ```php
 <?php
 use function Mantas6\FzfPhp\fzf;
 
 $selected = fzf(
     options: ['Apple', 'Orange', 'Grapefruit'],
-    arguments: ['height' => '40%'],
+    arguments: [
+        'height' => '40%',
+        'ansi' => true,
+        'cycle' => true,
+    ],
 );
 ```
 

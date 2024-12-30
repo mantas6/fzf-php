@@ -31,6 +31,24 @@ it('passes non keyed arguments', function (): void {
     expect($selection)->toContain(' --wrap');
 });
 
+it('does not pass arguments with false values', function (): void {
+    $selection = fzf(
+        options: ['Apple', 'Orange', 'Grapefruit'],
+        arguments: ['wrap' => false],
+    );
+
+    expect($selection)->not->toContain(' --wrap');
+});
+
+it('does not pass single letter arguments with false values', function (): void {
+    $selection = fzf(
+        options: ['Apple', 'Orange', 'Grapefruit'],
+        arguments: ['i' => false],
+    );
+
+    expect($selection)->not->toContain(' -i');
+});
+
 it('passes single letter arguments', function (): void {
     $selection = fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
