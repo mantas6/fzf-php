@@ -3,6 +3,7 @@
 namespace FzfPhp;
 
 use Composer\Autoload\ClassLoader;
+use FzfPhp\Exceptions\ProcessException;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 
@@ -66,12 +67,11 @@ class FuzzyFinder
         $input->close();
         $process->wait();
 
-        // echo ($process->getExitCode());
-
+        $exitCode = $process->getExitCode();
         $error = $process->getErrorOutput();
 
-        if ($error !== '' && $error !== '0') {
-            throw new \Exception($error);
+        if ($exitCode !== 0 && ! in_array($exitCode, [1, 130])) {
+            throw new ProcessException($error !== '' && $error !== '0' ? $error : "Process exited with code $exitCode");
         }
 
         return $process->getOutput();
