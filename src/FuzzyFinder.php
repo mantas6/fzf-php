@@ -27,7 +27,7 @@ class FuzzyFinder
     }
 
     /**
-     * @param  array <string, mixed>  $args
+     * @param array <string, mixed>  $args
      */
     public function arguments(array $args): self
     {
@@ -37,7 +37,7 @@ class FuzzyFinder
     }
 
     /**
-     * @param  array <int, string>  $options
+     * @param array <int, string> $options
      */
     public function ask(array $options = []): string
     {
@@ -66,7 +66,7 @@ class FuzzyFinder
     }
 
     /**
-     * @param  array <int, string>
+     * @return array <int, string>
      */
     protected function buildArguments(): array
     {
