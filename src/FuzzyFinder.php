@@ -87,7 +87,7 @@ class FuzzyFinder
     }
 
     /**
-     * @return array <int, string>
+     * @return array <int<0, max>, string>
      */
     protected function buildArguments(): array
     {
@@ -97,7 +97,7 @@ class FuzzyFinder
             if ($value !== false) {
                 $arguments[] = strlen($key) > 1 ? "--$key" : "-$key";
 
-                if ($value !== true) {
+                if (is_string($value)) {
                     $arguments[] = $value;
                 }
             }

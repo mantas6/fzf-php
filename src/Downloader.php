@@ -47,6 +47,9 @@ class Downloader
         unlink($binaryFile);
     }
 
+    /**
+    * @return null|array<string, array{assets: array<string, string>}>
+    */
     protected static function fetchLatestRelease(string $url): ?array
     {
         $ch = curl_init();
@@ -64,7 +67,14 @@ class Downloader
             throw new Exception("Failed to fetch release data. HTTP Code: $httpCode");
         }
 
-        return json_decode((string) $response, true);
+        /** @var array<string, array{assets: array<string, string>}> */
+        $decoded = json_decode((string) $response, true);
+
+        if ($decoded) {
+            return (array) $decoded;
+        }
+
+        return null;
     }
 
     // Function to download a file with a progress bar
