@@ -15,7 +15,7 @@ class FuzzyFinder
     /** @var array <string, mixed> */
     protected static array $defaultArguments = [];
 
-    protected static string $defaultCommand = './vendor/bin/fzf';
+    protected static string $defaultBinary = './vendor/bin/fzf';
 
     /** @var array <string> */
     protected static ?array $command = null;
@@ -30,7 +30,7 @@ class FuzzyFinder
 
     public static function usingDefaultCommand(): void
     {
-        static::$command = [static::$defaultCommand];
+        static::$command = [static::$defaultBinary];
     }
 
     /**
@@ -123,6 +123,6 @@ class FuzzyFinder
             array_keys(ClassLoader::getRegisteredLoaders())[0]
         );
 
-        return [$basePath.'/'.static::$defaultCommand];
+        return [$basePath.'/'.static::$defaultBinary];
     }
 }
