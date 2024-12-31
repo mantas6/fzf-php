@@ -5,9 +5,7 @@ use Mantas6\FzfPhp\FuzzyFinder;
 
 it('installs fzf binary', function (): void {
     $binPath = './vendor/bin/fzf';
-    if (!file_exists($binPath)) {
-        Downloader::installLatestRelease();
-    }
+    Downloader::installLatestRelease();
 
     expect(file_exists($binPath))->toBe(true);
     expect(filesize($binPath))->not->toBe(0);
