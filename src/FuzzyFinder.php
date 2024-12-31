@@ -53,9 +53,9 @@ class FuzzyFinder
 
     /**
      * @param  array <int, string>  $options
-     * @return string|array <int, string>
+     * @return null|string|array <int, string>
      */
-    public function ask(array $options = []): string|array
+    public function ask(array $options = []): string|array|null
     {
         $input = new InputStream;
 
@@ -74,8 +74,12 @@ class FuzzyFinder
         $exitCode = $process->getExitCode();
         $error = $process->getErrorOutput();
 
-        if ($exitCode !== 0 && !in_array($exitCode, [1, 130])) {
-            throw new ProcessException($error !== '' && $error !== '0' ? $error : "Process exited with code $exitCode");
+        if ($exitCode !== 0) {
+            if (in_array($exitCode, [1, 130])) {
+                return null;
+            } else {
+                throw new ProcessException($error !== '' && $error !== '0' ? $error : "Process exited with code $exitCode");
+            }
         }
 
         $selected = explode(

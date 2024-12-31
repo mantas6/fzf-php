@@ -17,13 +17,13 @@ it('does not throw if exit code 130 is returned', function (): void {
     expect($selected)->toBeEmpty();
 });
 
-it('does not throw if exit code 1 is returned', function (): void {
+it('does not throw and returns null if exit code 1 is returned', function (): void {
     $selected = fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
         arguments: ['fake-exit-1' => true],
     );
 
-    expect($selected)->toBeEmpty();
+    expect($selected)->toBeNull();
 });
 
 it('throws if exit code 2 is returned', function (): void {

@@ -8,9 +8,9 @@ if (!function_exists('FzfPhp\fzf')) {
     /**
      * @param  array <int, string>  $options
      * @param  array <string, mixed>  $arguments
-     * @return string|array <int, string>
+     * @return null|string|array <int, string>
      */
-    function fzf(array $options = [], array $arguments = []): string|array
+    function fzf(array $options = [], array $arguments = []): string|array|null
     {
         return (new FuzzyFinder)
             ->arguments($arguments)

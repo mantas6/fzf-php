@@ -41,6 +41,8 @@ $selected = fzf(['Apple', 'Orange', 'Grapefruit']);
 // 'Apple'
 ```
 
+- Returns `null` if user cancels (^C) the prompt
+
 Retrieve multiple options from a list:
 ```php
 <?php
