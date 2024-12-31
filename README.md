@@ -40,8 +40,8 @@ $selected = fzf(['Apple', 'Orange', 'Grapefruit']);
 
 // 'Apple'
 ```
-
-- Returns `null` if user cancels (^C) the prompt
+> [!NOTE]
+> Returns `null` if user cancels (^C) the prompt
 
 Retrieve multiple options from a list:
 ```php
@@ -55,8 +55,8 @@ $selected = fzf(
 
 // ['Apple', 'Orange']
 ```
-
-- Returns `[]` if user cancels (^C) the prompt
+> [!NOTE]
+> Returns `[]` if user cancels (^C) the prompt
 
 Or pass any other `fzf` configuration arguments:
 ```php
