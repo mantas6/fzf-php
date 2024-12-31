@@ -4,7 +4,7 @@ use Mantas6\FzfPhp\FuzzyFinder;
 
 use function Mantas6\FzfPhp\fzf;
 
-beforeAll(fn () => FuzzyFinder::usingCommand('./bin/fzf-fake'));
+beforeAll(fn () => FuzzyFinder::usingCommand(['./bin/fzf-fake']));
 afterAll(fn () => FuzzyFinder::usingDefaultCommand());
 
 it('passes keyed arguments', function (): void {

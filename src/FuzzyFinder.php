@@ -17,16 +17,20 @@ class FuzzyFinder
 
     protected static string $defaultCommand = './vendor/bin/fzf';
 
-    protected static ?string $command = null;
+    /** @var array <string> */
+    protected static ?array $command = null;
 
-    public static function usingCommand(string $cmd): void
+    /**
+     * @param  array <string>  $cmd
+     */
+    public static function usingCommand(array $cmd): void
     {
         static::$command = $cmd;
     }
 
     public static function usingDefaultCommand(): void
     {
-        static::$command = static::$defaultCommand;
+        static::$command = [static::$defaultCommand];
     }
 
     /**
@@ -56,7 +60,7 @@ class FuzzyFinder
         $input = new InputStream;
 
         $process = new Process(
-            command: [static::resolveCommand(), ...$this->buildArguments()],
+            command: [...static::resolveCommand(), ...$this->buildArguments()],
             input: $input,
             timeout: 0,
         );
@@ -106,9 +110,12 @@ class FuzzyFinder
         return $arguments;
     }
 
-    protected static function resolveCommand(): string
+    /**
+     * @return array <string>
+     */
+    protected static function resolveCommand(): array
     {
-        if (static::$command !== null && static::$command !== '' && static::$command !== '0') {
+        if (static::$command !== null && static::$command !== []) {
             return static::$command;
         }
 
@@ -116,6 +123,6 @@ class FuzzyFinder
             array_keys(ClassLoader::getRegisteredLoaders())[0]
         );
 
-        return $basePath.'/'.static::$defaultCommand;
+        return [$basePath.'/'.static::$defaultCommand];
     }
 }

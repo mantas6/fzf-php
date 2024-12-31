@@ -78,7 +78,7 @@ Use system `fzf` binary instead of fetching it:
 
 use Mantas6\FzfPhp\FuzzyFinder;
 
-FuzzyFinder::usingCommand('/usr/bin/env fzf');
+FuzzyFinder::usingCommand(['/usr/bin/env', 'fzf']);
 ```
 
 Set global arguments for all prompts:
