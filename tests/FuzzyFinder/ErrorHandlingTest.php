@@ -11,7 +11,7 @@ afterAll(fn () => FuzzyFinder::usingDefaultCommand());
 it('does not throw if exit code 130 is returned', function (): void {
     $selected = fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
-        arguments: ['exit-130' => true],
+        arguments: ['fake-exit-130' => true],
     );
 
     expect($selected)->toBeEmpty();
@@ -20,7 +20,7 @@ it('does not throw if exit code 130 is returned', function (): void {
 it('does not throw if exit code 1 is returned', function (): void {
     $selected = fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
-        arguments: ['exit-1' => true],
+        arguments: ['fake-exit-1' => true],
     );
 
     expect($selected)->toBeEmpty();
@@ -30,7 +30,7 @@ it('throws if exit code 2 is returned', function (): void {
     expect(
         fn (): string => fzf(
             options: ['Apple', 'Orange', 'Grapefruit'],
-            arguments: ['exit-2' => true],
+            arguments: ['fake-exit-2' => true],
         )
     )->toThrow(ProcessException::class);
 });
