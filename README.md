@@ -11,11 +11,12 @@
 ------
 This package allows you to create [`fzf`](https://github.com/junegunn/fzf) powered menus straight from PHP code.
 
-### Features
+## Features
+
 - Automatic `fzf` binary download
 - Inline `fzf` configuration
 
-### Installation
+## Installation
 
 Install the package:
 
@@ -23,7 +24,7 @@ Install the package:
 composer require mantas6/fzf-php
 ```
 
-### Usage
+## Usage
 
 Retrieve a single option from a list:
 ```php
@@ -65,7 +66,7 @@ $selected = fzf(
 );
 ```
 
-### Configuration
+## Configuration
 
 Use system `fzf` binary instead of fetching it:
 ```php
