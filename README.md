@@ -9,7 +9,7 @@
 </p>
 
 ------
-This package allows you to create `fzf` powered menus straight from PHP code.
+This package allows you to create [`fzf` GitHub page](https://github.com/junegunn/fzf) powered menus straight from PHP code.
 
 ### Features
 - Automatic `fzf` binary download
@@ -94,3 +94,6 @@ use Mantas6\FzfPhp\FuzzyFinder;
 
 FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
 ```
+
+See also:
+- [`fzf` GitHub page](https://github.com/junegunn/fzf)
