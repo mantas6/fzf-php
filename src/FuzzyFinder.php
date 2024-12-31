@@ -76,10 +76,10 @@ class FuzzyFinder
 
         if ($exitCode !== 0) {
             if (in_array($exitCode, [1, 130])) {
-                return null;
-            } else {
-                throw new ProcessException($error !== '' && $error !== '0' ? $error : "Process exited with code $exitCode");
+                return $this->isMultiMode() ? [] : null;
             }
+
+            throw new ProcessException($error !== '' && $error !== '0' ? $error : "Process exited with code $exitCode");
         }
 
         $selected = explode(
@@ -87,11 +87,16 @@ class FuzzyFinder
             $process->getOutput()
         );
 
-        if (!empty($this->arguments['multi']) || !empty($this->arguments['m'])) {
+        if ($this->isMultiMode()) {
             return $selected;
         }
 
         return $selected[0];
+    }
+
+    protected function isMultiMode(): bool
+    {
+        return !empty($this->arguments['multi']) || !empty($this->arguments['m']);
     }
 
     /**

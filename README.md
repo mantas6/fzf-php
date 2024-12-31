@@ -56,6 +56,8 @@ $selected = fzf(
 // ['Apple', 'Orange']
 ```
 
+- Returns `[]` if user cancels (^C) the prompt
+
 Or pass any other `fzf` configuration arguments:
 ```php
 <?php

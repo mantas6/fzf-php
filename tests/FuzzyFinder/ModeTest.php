@@ -31,3 +31,16 @@ it('returns array in multi mode with long flag', function (): void {
 
     expect($selection)->toBeArray();
 });
+
+it('returns empty array if user cancels', function (): void {
+    $selected = fzf(
+        options: ['Apple', 'Orange', 'Grapefruit'],
+        arguments: [
+            'multi' => true,
+            'fake-exit-1' => true,
+        ],
+    );
+
+    expect($selected)->not->toBeNull()
+        ->toBe([]);
+});
