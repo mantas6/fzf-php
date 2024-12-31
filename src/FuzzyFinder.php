@@ -65,7 +65,11 @@ class FuzzyFinder
             timeout: 0,
         );
 
-        $process->start();
+        $process->start(env: [
+            'FZF_DEFAULT_COMMAND' => null,
+            'FZF_DEFAULT_OPTS' => null,
+            'FZF_DEFAULT_OPTS_FILE' => null,
+        ]);
 
         $input->write(implode(PHP_EOL, $options));
         $input->close();

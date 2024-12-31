@@ -15,6 +15,12 @@ foreach ($argv as $arg) {
             exit(2);
         case '--fake-exit-1':
             exit(1);
+        case '--fake-dump-env':
+            foreach ($_ENV as $key => $value) {
+                echo "$key=$value".PHP_EOL;
+            }
+
+            exit(0);
     }
 }
 
