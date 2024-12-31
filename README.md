@@ -23,12 +23,6 @@ Install the package:
 composer require mantas6/fzf-php
 ```
 
-Download the `fzf` binary:
-
-```sh
-./vendor/bin/fzf-php-install
-```
-
 ### Usage
 
 Retrieve a single option from a list:
@@ -85,6 +79,8 @@ use Mantas6\FzfPhp\FuzzyFinder;
 FuzzyFinder::usingCommand(['/usr/bin/env', 'fzf']);
 ```
 
+- Automatic binary download will be disabled when custom command is set
+
 Set global arguments for all prompts:
 ```php
 <?php
@@ -93,6 +89,14 @@ Set global arguments for all prompts:
 use Mantas6\FzfPhp\FuzzyFinder;
 
 FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
+```
+
+### Binary download
+
+The `fzf` binary is downloaded automatically on the first use, however you can initiate the download manually:
+
+```sh
+./vendor/bin/fzf-php-install
 ```
 
 See also:

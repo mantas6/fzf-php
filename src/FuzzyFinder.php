@@ -30,7 +30,7 @@ class FuzzyFinder
 
     public static function usingDefaultCommand(): void
     {
-        static::$command = [static::$defaultBinary];
+        static::$command = null;
     }
 
     /**
@@ -57,6 +57,8 @@ class FuzzyFinder
      */
     public function ask(array $options = []): string|array|null
     {
+        static::prepareBinary();
+
         $input = new InputStream;
 
         $process = new Process(
@@ -137,5 +139,12 @@ class FuzzyFinder
         );
 
         return [$basePath.'/'.static::$defaultBinary];
+    }
+
+    protected static function prepareBinary(): void
+    {
+        if (static::$command === null && !file_exists(static::resolveCommand()[0])) {
+            Downloader::installLatestRelease();
+        }
     }
 }
