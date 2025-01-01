@@ -80,8 +80,10 @@ class FuzzyFinder
 
         $input = new InputStream;
 
+        $arguments = $this->getAllArguments();
+
         $process = new Process(
-            command: [...static::resolveCommand(), ...$this->buildArguments()],
+            command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
             input: $input,
             timeout: 0,
         );
@@ -92,7 +94,7 @@ class FuzzyFinder
             'FZF_DEFAULT_OPTS_FILE' => null,
         ]);
 
-        $input->write(implode(PHP_EOL, $this->formatter->before($options)));
+        $input->write(implode(PHP_EOL, $this->formatter->before($options, $arguments)));
         $input->close();
         $process->wait();
 
@@ -108,10 +110,12 @@ class FuzzyFinder
         }
 
         $selected = $this->formatter->after(
-            explode(
+            selected: explode(
                 PHP_EOL,
                 $process->getOutput()
-            )
+            ),
+
+            arguments: $arguments,
         );
 
         if ($this->isMultiMode()) {
@@ -129,28 +133,31 @@ class FuzzyFinder
     /**
      * @return array <int<0, max>, string>
      */
-    protected function buildArguments(): array
+    protected function prepareArgumentsForCommand(array $arguments): array
     {
-        $arguments = [];
+        $commandArguments = [];
 
-        $argumentOptions = [
+        foreach ($arguments as $key => $value) {
+            if ($value !== false) {
+                $commandArguments[] = strlen($key) > 1 ? "--$key" : "-$key";
+
+                if (is_string($value)) {
+                    $commandArguments[] = $value;
+                }
+            }
+        }
+
+        return $commandArguments;
+    }
+
+    protected function getAllArguments(): array
+    {
+        return [
             ...static::$defaultArguments,
             ...$this->formatter->arguments(
                 $this->arguments,
             ),
         ];
-
-        foreach ($argumentOptions as $key => $value) {
-            if ($value !== false) {
-                $arguments[] = strlen($key) > 1 ? "--$key" : "-$key";
-
-                if (is_string($value)) {
-                    $arguments[] = $value;
-                }
-            }
-        }
-
-        return $arguments;
     }
 
     /**

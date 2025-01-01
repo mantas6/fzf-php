@@ -14,6 +14,7 @@ class AssociativeFormatter implements Formatter
     {
         return [
             ...$arguments,
+            'd' => false,
             'delimiter' => ':',
             'with-nth' => '2..',
         ];
@@ -23,12 +24,12 @@ class AssociativeFormatter implements Formatter
      * @param  array<mixed>  $options
      * @return array<string, string>
      */
-    public function before(array $options): array
+    public function before(array $options, array $arguments): array
     {
         $processed = [];
 
         foreach ($options as $key => $value) {
-            $processed[] = "$key:$value";
+            $processed[] = $key . $arguments['delimiter'] . $value;
         }
 
         return $processed;
@@ -38,7 +39,7 @@ class AssociativeFormatter implements Formatter
      * @param  array<string>  $selected
      * @return array<mixed>
      */
-    public function after(array $selected): array
+    public function after(array $selected, array $arguments): array
     {
         $keys = [];
 
@@ -46,7 +47,7 @@ class AssociativeFormatter implements Formatter
             $keys[] = substr(
                 $value,
                 0,
-                strpos($value, ':'),
+                strpos($value, (string) $arguments['delimiter']),
             );
         }
 

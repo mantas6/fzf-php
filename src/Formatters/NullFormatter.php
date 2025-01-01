@@ -19,7 +19,7 @@ class NullFormatter implements Formatter
      * @param  array<mixed>  $options
      * @return array<string, string>
      */
-    public function before(array $options): array
+    public function before(array $options, array $arguments): array
     {
         return $options;
     }
@@ -28,7 +28,7 @@ class NullFormatter implements Formatter
      * @param  array<string>  $selected
      * @return array<mixed>
      */
-    public function after(array $selected): array
+    public function after(array $selected, array $arguments): array
     {
         return $selected;
     }

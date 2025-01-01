@@ -26,3 +26,20 @@ it('maps selection correctly', function (): void {
 
     expect($selected)->toBe('3');
 });
+
+it('respect set delimiter', function (): void {
+
+    $selected = fzf(
+        options: [
+            1 => 'Apple',
+            2 => 'Orange',
+            3 => 'Grapefruit',
+        ],
+        arguments: [
+            'delimiter' => '%',
+            'fake-first' => true,
+        ]
+    );
+
+    expect($selected)->toBe('1');
+})->todo('do an actual assertion');
