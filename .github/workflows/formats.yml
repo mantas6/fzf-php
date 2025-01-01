@@ -1,10 +1,6 @@
 name: Formats
 
-on:
-  push:
-  pull_request:
-  schedule:
-   - cron: "0 0 * * 4"
+on: ['push', 'pull_request']
 # on: workflow_dispatch
 
 jobs:
