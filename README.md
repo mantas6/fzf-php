@@ -40,7 +40,6 @@ $selected = fzf(['Apple', 'Orange', 'Grapefruit']);
 Retrieve multiple options from a list:
 ```php
 <?php
-use function Mantas6\FzfPhp\fzf;
 
 $selected = fzf(
     options: ['Apple', 'Orange', 'Grapefruit'],
@@ -54,7 +53,6 @@ $selected = fzf(
 Or pass any other `fzf` configuration arguments:
 ```php
 <?php
-use function Mantas6\FzfPhp\fzf;
 
 $selected = fzf(
     options: ['Apple', 'Orange', 'Grapefruit'],
@@ -84,8 +82,6 @@ Set global arguments for all prompts:
 ```php
 <?php
 // YourAppServiceProvider.php
-
-use Mantas6\FzfPhp\FuzzyFinder;
 
 FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
 ```
