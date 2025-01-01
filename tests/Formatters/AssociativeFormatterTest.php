@@ -27,7 +27,23 @@ it('maps selection correctly', function (): void {
     expect($selected)->toBe('3');
 });
 
-it('respect set delimiter', function (): void {
+it('maps correctly if delimiter is used in the list', function (): void {
+
+    $selected = fzf(
+        options: [
+            1 => 'Apple: Fresh',
+            2 => 'Orange: Not so fresh',
+            3 => 'Grapefruit',
+        ],
+        arguments: [
+            'fake-first' => true,
+        ]
+    );
+
+    expect($selected)->toBe('1');
+});
+
+it('respects set delimiter', function (): void {
 
     $selected = fzf(
         options: [
