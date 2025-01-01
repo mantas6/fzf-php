@@ -64,6 +64,50 @@ $selected = fzf(
 );
 ```
 
+### Associative options
+
+If associative array is passed to `options`, the result will be it's key(s):
+
+```php
+<?php
+
+$selected = fzf(
+    options: [
+        '1' => 'Apple',
+        '2' => 'Orange',
+        '3' => 'Grapefruit',
+    ],
+);
+
+// '1'
+```
+
+- `array_is_list` is used to check for the array type
+
+#### Reusable object approach
+
+If `options` are not provided, the object is returned:
+```php
+<?php
+
+$finder = fzf();
+
+$fruit = $finder->ask(['Apple', 'Orange', 'Grapefruit']);
+
+// ...
+
+$weight = $finder->ask(['250g', '500g', '1kg']);
+```
+
+Configuration can be passed to pre-configure the instance:
+```php
+<?php
+
+$finder = fzf(arguments: ['height' => '50%']);
+
+$finder->ask(['Apple', 'Orange', 'Grapefruit']);
+```
+
 ## Configuration
 
 Use system `fzf` binary instead of fetching it:

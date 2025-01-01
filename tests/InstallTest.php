@@ -1,11 +1,12 @@
 <?php
 
 use Mantas6\FzfPhp\Downloader;
-use Mantas6\FzfPhp\FuzzyFinder;
+
+use function Mantas6\FzfPhp\fzf;
 
 $binPath = './vendor/bin/fzf';
 
-beforeEach(fn () => file_exists($binPath) ? unlink($binPath) : null);
+beforeEach(fn (): ?bool => file_exists($binPath) ? unlink($binPath) : null);
 
 it('installs fzf binary', function () use ($binPath): void {
     Downloader::installLatestRelease();
@@ -13,9 +14,7 @@ it('installs fzf binary', function () use ($binPath): void {
     expect($binPath)->toBeFile();
     expect(filesize($binPath))->not->toBe(0);
 
-    $versionInfo = (new FuzzyFinder)
-        ->arguments(['version' => true])
-        ->ask();
+    $versionInfo = fzf([], ['version' => true]);
 
     expect($versionInfo)->not->toBeEmpty();
 });
@@ -28,9 +27,7 @@ it('installs fzf binary will script from bin', function () use ($binPath): void 
     expect($binPath)->toBeFile();
     expect(filesize($binPath))->not->toBe(0);
 
-    $versionInfo = (new FuzzyFinder)
-        ->arguments(['version' => true])
-        ->ask();
+    $versionInfo = fzf([], ['version' => true]);
 
     expect($versionInfo)->not->toBeEmpty();
 });

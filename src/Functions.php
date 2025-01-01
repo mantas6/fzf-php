@@ -4,16 +4,23 @@ declare(strict_types=1);
 
 namespace Mantas6\FzfPhp;
 
+use Mantas6\FzfPhp\Concerns\Formatter;
+
 if (!function_exists('FzfPhp\fzf')) {
     /**
      * @param  array <int, string>  $options
      * @param  array <string, mixed>  $arguments
-     * @return null|string|array <int, string>
      */
-    function fzf(array $options = [], array $arguments = []): string|array|null
+    function fzf(?array $options = null, array $arguments = [], ?Formatter $format = null): mixed
     {
-        return (new FuzzyFinder)
-            ->arguments($arguments)
-            ->ask($options);
+        $finder = (new FuzzyFinder)
+            ->format($format)
+            ->arguments($arguments);
+
+        if ($options !== null) {
+            return $finder->ask($options);
+        }
+
+        return $finder;
     }
 }

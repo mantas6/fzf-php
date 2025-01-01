@@ -3,19 +3,24 @@
 namespace Mantas6\FzfPhp;
 
 use Composer\Autoload\ClassLoader;
+use Mantas6\FzfPhp\Concerns\Formatter;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
+use Mantas6\FzfPhp\Formatters\AssociativeFormatter;
+use Mantas6\FzfPhp\Formatters\NullFormatter;
 use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 
 class FuzzyFinder
 {
-    /** @var array <string, mixed> */
+    /** @var array <string, string|bool> */
     protected array $arguments = [];
 
     /** @var array <string, mixed> */
     protected static array $defaultArguments = [];
 
     protected static string $defaultBinary = './vendor/bin/fzf';
+
+    protected ?Formatter $formatter = null;
 
     /** @var array <string> */
     protected static ?array $command = null;
@@ -41,6 +46,13 @@ class FuzzyFinder
         static::$defaultArguments = $args;
     }
 
+    public function format(?Formatter $formatter = null): self
+    {
+        $this->formatter = $formatter;
+
+        return $this;
+    }
+
     /**
      * @param  array <string, mixed>  $args
      */
@@ -52,12 +64,19 @@ class FuzzyFinder
     }
 
     /**
-     * @param  array <int, string>  $options
-     * @return null|string|array <int, string>
+     * @param  array <mixed>  $options
+     * @return null|mixed|string|array <mixed>
      */
-    public function ask(array $options = []): string|array|null
+    public function ask(array $options = []): mixed
     {
         static::prepareBinary();
+
+        if (!$this->formatter instanceof Formatter) {
+            $this->formatter = match (true) {
+                !array_is_list($options) => new AssociativeFormatter,
+                default => new NullFormatter,
+            };
+        }
 
         $input = new InputStream;
 
@@ -73,7 +92,7 @@ class FuzzyFinder
             'FZF_DEFAULT_OPTS_FILE' => null,
         ]);
 
-        $input->write(implode(PHP_EOL, $options));
+        $input->write(implode(PHP_EOL, $this->formatter->before($options)));
         $input->close();
         $process->wait();
 
@@ -88,9 +107,11 @@ class FuzzyFinder
             throw new ProcessException($error !== '' && $error !== '0' ? $error : "Process exited with code $exitCode");
         }
 
-        $selected = explode(
-            PHP_EOL,
-            $process->getOutput()
+        $selected = $this->formatter->after(
+            explode(
+                PHP_EOL,
+                $process->getOutput()
+            )
         );
 
         if ($this->isMultiMode()) {
@@ -112,7 +133,14 @@ class FuzzyFinder
     {
         $arguments = [];
 
-        foreach ([...static::$defaultArguments, ...$this->arguments] as $key => $value) {
+        $argumentOptions = [
+            ...static::$defaultArguments,
+            ...$this->formatter->arguments(
+                $this->arguments,
+            ),
+        ];
+
+        foreach ($argumentOptions as $key => $value) {
             if ($value !== false) {
                 $arguments[] = strlen($key) > 1 ? "--$key" : "-$key";
 
@@ -138,7 +166,7 @@ class FuzzyFinder
             array_keys(ClassLoader::getRegisteredLoaders())[0]
         );
 
-        return [$basePath.'/'.static::$defaultBinary];
+        return [$basePath . '/' . static::$defaultBinary];
     }
 
     protected static function prepareBinary(): void
