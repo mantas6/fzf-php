@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/mantas6/fzf-php/main/docs/logo.png" height="105" alt="Fzf Php">
+    <img src="https://raw.githubusercontent.com/mantas6/fzf-php/main/docs/logo.png" height="122" alt="Fzf Php">
     <p align="center">
         <a href="https://github.com/mantas6/fzf-php/actions"><img alt="GitHub Workflow Status (main)" src="https://github.com/mantas6/fzf-php/actions/workflows/tests.yml/badge.svg"></a>
         <a href="https://packagist.org/packages/mantas6/fzf-php"><img alt="Total Downloads" src="https://img.shields.io/packagist/dt/mantas6/fzf-php"></a>
@@ -25,6 +25,8 @@ composer require mantas6/fzf-php
 ```
 
 ## Usage
+
+### Lists
 
 Retrieve a single option from a list:
 ```php
@@ -64,7 +66,7 @@ $selected = fzf(
 );
 ```
 
-### Associative options
+### Associative arrays
 
 If associative array is passed to `options`, the result will be it's key(s):
 
@@ -84,7 +86,7 @@ $selected = fzf(
 
 - `array_is_list` is used to check for the array type
 
-#### Reusable object approach
+### Reusable object approach
 
 If `options` are not provided, the object is returned:
 ```php
