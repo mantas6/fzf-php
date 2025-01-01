@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/mantas6/fzf-php/main/docs/example.png" height="300" alt="Skeleton Php">
+    <img src="https://raw.githubusercontent.com/mantas6/fzf-php/main/docs/logo.png" height="300" alt="Fzf Php">
     <p align="center">
         <a href="https://github.com/mantas6/fzf-php/actions"><img alt="GitHub Workflow Status (main)" src="https://github.com/mantas6/fzf-php/actions/workflows/tests.yml/badge.svg"></a>
         <a href="https://packagist.org/packages/mantas6/fzf-php"><img alt="Total Downloads" src="https://img.shields.io/packagist/dt/mantas6/fzf-php"></a>
