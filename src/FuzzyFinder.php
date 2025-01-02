@@ -3,6 +3,7 @@
 namespace Mantas6\FzfPhp;
 
 use Composer\Autoload\ClassLoader;
+use Mantas6\FzfPhp\Concerns\PresentsForFinder;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Support\CompactTable;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -124,6 +125,7 @@ class FuzzyFinder
         foreach ($options as $value) {
             $processed[] = match (true) {
                 is_string($value) => [$value],
+                $value instanceof PresentsForFinder => $value->presentForFinder(),
                 is_object($value) && method_exists($value, 'toArray') => $value->toArray(),
                 default => (array) $value,
             };

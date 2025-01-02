@@ -28,7 +28,7 @@ composer require mantas6/fzf-php
 
 ### Options
 
-Options argument takes an array of variables.
+Options can be provided in a multitude of ways.
 
 #### Strings
 
@@ -62,6 +62,8 @@ $selected = fzf(
 
 #### Objects
 
+##### Using `toArray`
+
 ```php
 <?php
 
@@ -77,6 +79,26 @@ $selected = fzf(
 ```
 
 - The object class must implement `toArray`
+
+##### Implementing `PresentsForFinder` interface
+
+If using `toArray` method is not feasible, an interface can be implemented instead.
+
+```php
+<?php
+
+use Mantas6\FzfPhp\Concerns\PresentsForFinder;
+
+class Model implements PresentsForFinder
+{
+    protected string $name;
+
+    public function presentForFinder(): array
+    {
+        return [$this->name];
+    }
+}
+```
 
 ### Multi mode
 
