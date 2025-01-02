@@ -8,6 +8,7 @@ use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Support\CompactTable;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
+use Traversable;
 
 class FuzzyFinder
 {
@@ -114,6 +115,8 @@ class FuzzyFinder
     protected function normalizeOptionsType($options): array
     {
         return match (true) {
+            // Collections
+            $options instanceof Traversable => iterator_to_array($options),
             // toArray()
             is_object($options) && method_exists($options, 'toArray') => $options->toArray(),
             // ...

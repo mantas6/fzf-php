@@ -14,7 +14,7 @@ class CustomCollection
     }
 }
 
-it('works with collection classes', function (): void {
+it('works with collection classes with toArray', function (): void {
 
     $selection = fzf(
         options: new CustomCollection,
