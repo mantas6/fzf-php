@@ -69,6 +69,8 @@ $selected = fzf(
 ```
 
 - Arguments `delimiter` (or `d`), `with-nth` are not supported, and will be overridden if specified
+- Arguments that transform output may not be supported
+- Preview and reload is not supported
 
 ### Reusable object approach
 
