@@ -127,6 +127,23 @@ $selected = fzf(
 
 - The callable must always return an `array`
 
+#### Options as object
+
+Instead of passing options as array, object can be used.
+
+```php
+<?php
+
+$selected = fzf(
+    options: new MyCustomCollection,
+);
+```
+
+The class needs to meet one of the following requirements:
+
+- Must implement the native `Traversable` interface
+- Needs to implement `toArray()` method
+
 ### Multi mode
 
 Retrieve multiple options from a list.
