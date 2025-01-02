@@ -28,13 +28,10 @@ composer require mantas6/fzf-php
 
 ### Options
 
-Options must be an array, containing:
+Options argument takes an array of variables.
 
-- Strings
-- Arrays
-- Objects - must contain `toArray()` method
+#### Strings
 
-Retrieve a single option from a list:
 ```php
 <?php
 use function Mantas6\FzfPhp\fzf;
@@ -45,7 +42,7 @@ $selected = fzf(['Apple', 'Orange', 'Grapefruit']);
 ```
 - Returns `null` if user cancels (^C) the prompt
 
-Pass a nested array:
+#### Arrays
 
 ```php
 <?php
@@ -61,7 +58,29 @@ $selected = fzf(
 // ['Apples', '1kg']
 ```
 
-Retrieve multiple options from a list:
+- Each array element represents different column in the finder
+
+#### Objects
+
+```php
+<?php
+
+$selected = fzf(
+    options: [
+        new Model('Apple'),
+        new Model('Orange'),
+        new Model('Grapefruits'),
+    ]
+);
+
+// new Model('Apple')
+```
+
+- The object class must implement `toArray`
+
+### Multi mode
+
+Retrieve multiple options from a list.
 
 ```php
 <?php
@@ -77,7 +96,8 @@ $selected = fzf(
 
 ### Arguments
 
-Or pass any other `fzf` configuration arguments:
+Pass any other `fzf` configuration arguments:
+
 ```php
 <?php
 
@@ -91,13 +111,14 @@ $selected = fzf(
 );
 ```
 
-- Arguments `delimiter` (or `d`), `with-nth` are not supported, and will be overridden if specified
+- Arguments `delimiter` (or `d`), `with-nth` are used internally, and will be overridden if specified
 - Arguments that transform output may not be supported
-- Preview and reload is not supported
+- Preview and reload are not currently supported
 
 ### Reusable object approach
 
-If `options` are not provided, the object is returned:
+If `options` are not provided, the object is returned.
+
 ```php
 <?php
 
@@ -110,7 +131,8 @@ $fruit = $finder->ask(['Apple', 'Orange', 'Grapefruit']);
 $weight = $finder->ask(['250g', '500g', '1kg']);
 ```
 
-Configuration can be passed to pre-configure the instance:
+Configuration can be passed to pre-configure the instance.
+
 ```php
 <?php
 
@@ -121,7 +143,8 @@ $finder->ask(['Apple', 'Orange', 'Grapefruit']);
 
 ## Configuration
 
-Use system `fzf` binary instead of fetching it:
+Use system `fzf` binary instead of fetching it.
+
 ```php
 <?php
 // YourAppServiceProvider.php
@@ -133,7 +156,8 @@ FuzzyFinder::usingCommand(['/usr/bin/env', 'fzf']);
 
 - Automatic binary download will be disabled when custom command is set
 
-Set global arguments for all prompts:
+Set global arguments for all prompts.
+
 ```php
 <?php
 // YourAppServiceProvider.php
@@ -143,7 +167,7 @@ FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
 
 ### Binary download
 
-The `fzf` binary is downloaded automatically on the first use, however you can initiate the download manually:
+The `fzf` binary is downloaded automatically on the first use, however you can initiate the download manually.
 
 ```sh
 ./vendor/bin/fzf-php-install

@@ -20,11 +20,23 @@ foreach (
     }
 }
 
+class Model
+{
+    public function __construct(protected string $name, protected int $weight)
+    {
+    }
+
+    public function toArray()
+    {
+        return [$this->name, $this->weight];
+    }
+}
+
 $selection = fzf(
     options: [
-        ['Apple', '1kg'],
-        ['Orange', '2kg'],
-        ['Grapefruit', '3kg'],
+        new Model('Apple', 250),
+        new Model('Orange', 500),
+        new Model('Grapefruit', 1000),
     ],
     arguments: ['height' => '~40%'],
 );

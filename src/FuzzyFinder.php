@@ -58,7 +58,7 @@ class FuzzyFinder
      * @param  array <mixed>  $options
      * @return null|mixed|string|array <mixed>
      */
-    public function ask(array $options = []): mixed
+    public function ask($options = []): mixed
     {
         static::prepareBinary();
 
@@ -103,7 +103,7 @@ class FuzzyFinder
         return $selected[0];
     }
 
-    protected function prepareOptionsForCommand(array $options): array
+    protected function prepareOptionsForCommand($options): array
     {
         $options = $this->prepareOptionsForTable($options);
         $options = $this->convertOptionsToTable($options);
@@ -117,14 +117,15 @@ class FuzzyFinder
         return $processed;
     }
 
-    protected function prepareOptionsForTable(array $options): array
+    protected function prepareOptionsForTable($options): array
     {
         $processed = [];
 
         foreach ($options as $value) {
             $processed[] = match (true) {
                 is_string($value) => [$value],
-                default => $value,
+                is_object($value) && method_exists($value, 'toArray') => $value->toArray(),
+                default => (array) $value,
             };
         }
 
