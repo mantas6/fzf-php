@@ -26,7 +26,7 @@ composer require mantas6/fzf-php
 
 ## Usage
 
-### Lists
+### Options
 
 Retrieve a single option from a list:
 ```php
@@ -52,6 +52,8 @@ $selected = fzf(
 ```
 - Returns `[]` if user cancels (^C) the prompt
 
+### Arguments
+
 Or pass any other `fzf` configuration arguments:
 ```php
 <?php
@@ -66,25 +68,7 @@ $selected = fzf(
 );
 ```
 
-### Associative arrays
-
-If associative array is passed to `options`, the result will be it's key(s):
-
-```php
-<?php
-
-$selected = fzf(
-    options: [
-        '1' => 'Apple',
-        '2' => 'Orange',
-        '3' => 'Grapefruit',
-    ],
-);
-
-// '1'
-```
-
-- `array_is_list` is used to check for the array type
+- Arguments `delimiter` (or `d`), `with-nth` are not supported, and will be overridden if specified
 
 ### Reusable object approach
 

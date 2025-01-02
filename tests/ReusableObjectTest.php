@@ -9,7 +9,7 @@ it('returns an FuzzyFinder instance when options are not passed', function (): v
 
     expect($finder)->toBeInstanceOf(FuzzyFinder::class);
 
-    $finder = fzf(arguments: ['d' => ':']);
+    $finder = fzf(arguments: ['height' => '40%']);
 
     expect($finder)->toBeInstanceOf(FuzzyFinder::class);
 });

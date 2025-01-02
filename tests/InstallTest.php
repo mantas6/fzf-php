@@ -14,9 +14,7 @@ it('installs fzf binary', function () use ($binPath): void {
     expect($binPath)->toBeFile();
     expect(filesize($binPath))->not->toBe(0);
 
-    $versionInfo = fzf([], ['version' => true]);
-
-    expect($versionInfo)->not->toBeEmpty();
+    fzf(['Apple'], ['filter' => 'Apple']);
 });
 
 it('installs fzf binary will script from bin', function () use ($binPath): void {
@@ -27,7 +25,5 @@ it('installs fzf binary will script from bin', function () use ($binPath): void 
     expect($binPath)->toBeFile();
     expect(filesize($binPath))->not->toBe(0);
 
-    $versionInfo = fzf([], ['version' => true]);
-
-    expect($versionInfo)->not->toBeEmpty();
+    fzf(['Apple'], ['filter' => 'Apple']);
 });

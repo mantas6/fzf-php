@@ -3,10 +3,7 @@
 namespace Mantas6\FzfPhp;
 
 use Composer\Autoload\ClassLoader;
-use Mantas6\FzfPhp\Concerns\Formatter;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
-use Mantas6\FzfPhp\Formatters\AssociativeFormatter;
-use Mantas6\FzfPhp\Formatters\NullFormatter;
 use Symfony\Component\Process\Process;
 
 class FuzzyFinder
@@ -19,7 +16,7 @@ class FuzzyFinder
 
     protected static string $defaultBinary = './vendor/bin/fzf';
 
-    protected ?Formatter $formatter = null;
+    protected static string $delimiter = ':';
 
     /** @var array <string> */
     protected static ?array $command = null;
@@ -45,13 +42,6 @@ class FuzzyFinder
         static::$defaultArguments = $args;
     }
 
-    public function format(?Formatter $formatter = null): self
-    {
-        $this->formatter = $formatter;
-
-        return $this;
-    }
-
     /**
      * @param  array <string, mixed>  $args
      */
@@ -70,18 +60,13 @@ class FuzzyFinder
     {
         static::prepareBinary();
 
-        if (!$this->formatter instanceof Formatter) {
-            $this->formatter = match (true) {
-                !array_is_list($options) => new AssociativeFormatter,
-                default => new NullFormatter,
-            };
-        }
-
         $arguments = $this->getAllArguments();
+
+        $options = array_values($options);
 
         $process = new Process(
             command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
-            input: implode(PHP_EOL, $this->formatter->before($options, $arguments)),
+            input: implode(PHP_EOL, $this->prepareOptionsForCommand($options)),
             timeout: 0,
         );
 
@@ -104,13 +89,9 @@ class FuzzyFinder
             throw new ProcessException($error !== '' && $error !== '0' ? $error : "Process exited with code $exitCode");
         }
 
-        $selected = $this->formatter->after(
-            selected: explode(
-                PHP_EOL,
-                $process->getOutput()
-            ),
-
-            arguments: $arguments,
+        $selected = $this->mapFinderOutput(
+            selected: explode(PHP_EOL, $process->getOutput()),
+            options: $options,
         );
 
         if ($this->isMultiMode()) {
@@ -118,6 +99,44 @@ class FuzzyFinder
         }
 
         return $selected[0];
+    }
+
+    protected function prepareOptionsForCommand(array $options): array
+    {
+        $processed = [];
+
+        foreach ($options as $key => $value) {
+            $processed[] = $key . static::$delimiter . $value;
+        }
+
+        return $processed;
+    }
+
+    protected function mapFinderOutput(array $selected, array $options): array
+    {
+        $values = [];
+
+        foreach (array_filter($selected) as $value) {
+            $key = substr(
+                $value,
+                0,
+                strpos($value, static::$delimiter),
+            );
+
+            $values[] = $options[$key];
+        }
+
+        return $values;
+    }
+
+    protected function getOptionArguments(array $arguments): array
+    {
+        return [
+            ...$arguments,
+            'd' => false,
+            'delimiter' => static::$delimiter,
+            'with-nth' => '2..',
+        ];
     }
 
     protected function isMultiMode(): bool
@@ -149,7 +168,7 @@ class FuzzyFinder
     {
         return [
             ...static::$defaultArguments,
-            ...$this->formatter->arguments(
+            ...$this->getOptionArguments(
                 $this->arguments,
             ),
         ];

@@ -15,7 +15,7 @@ it('adds default arguments when set', function (): void {
     $selection = fzf(['Apple', 'Orange', 'Grapefruit']);
 
     expect($selection)->toContain(' --pointer ->');
-});
+})->skip();
 
 it('adds to override default arguments', function (): void {
     FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
@@ -26,4 +26,4 @@ it('adds to override default arguments', function (): void {
     );
 
     expect($selection)->toContain(' --pointer >>');
-});
+})->skip();

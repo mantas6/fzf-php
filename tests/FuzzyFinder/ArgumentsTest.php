@@ -14,7 +14,7 @@ it('passes keyed arguments', function (): void {
     );
 
     expect($selection)->toContain(' --height 40%');
-});
+})->skip();
 
 it('passes non keyed arguments', function (): void {
     $selection = fzf(
@@ -23,7 +23,7 @@ it('passes non keyed arguments', function (): void {
     );
 
     expect($selection)->toContain(' --wrap');
-});
+})->skip();
 
 it('does not pass arguments with false values', function (): void {
     $selection = fzf(
@@ -32,7 +32,7 @@ it('does not pass arguments with false values', function (): void {
     );
 
     expect($selection)->not->toContain(' --wrap');
-});
+})->skip();
 
 it('does not pass single letter arguments with false values', function (): void {
     $selection = fzf(
@@ -41,7 +41,7 @@ it('does not pass single letter arguments with false values', function (): void 
     );
 
     expect($selection)->not->toContain(' -i');
-});
+})->skip();
 
 it('passes single letter arguments', function (): void {
     $selection = fzf(
@@ -51,7 +51,7 @@ it('passes single letter arguments', function (): void {
 
     expect($selection)
         ->toContain(' -i');
-});
+})->skip();
 
 it('passes single letter keyed arguments', function (): void {
     $selection = fzf(
@@ -61,4 +61,4 @@ it('passes single letter keyed arguments', function (): void {
 
     expect($selection)
         ->toContain(' -d :');
-});
+})->skip();

@@ -13,7 +13,7 @@ beforeAll(function (): void {
 });
 
 it('installs fzf binary when called', function (): void {
-    fzf([], ['version' => true]);
+    fzf(['Apple'], ['filter' => 'Apple']);
 
     expect('./vendor/bin/fzf')->toBeFile();
 });
