@@ -77,7 +77,7 @@ class FuzzyFinder
 
         $process = new Process(
             command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
-            input: implode(PHP_EOL, $this->prepareOptionsForCommand($options)),
+            input: implode(PHP_EOL, $this->prepareOptionsForCommand($options, $arguments)),
             timeout: 0,
         );
 
@@ -126,10 +126,10 @@ class FuzzyFinder
         );
     }
 
-    protected function prepareOptionsForCommand($options): array
+    protected function prepareOptionsForCommand($options, array $arguments): array
     {
         $options = $this->prepareOptionsForTable($options);
-        $options = $this->convertOptionsToTable($options);
+        $options = $this->convertOptionsToTable($options, $arguments);
 
         $processed = [];
 
@@ -167,9 +167,11 @@ class FuzzyFinder
         };
     }
 
-    protected function convertOptionsToTable(array $options): array
+    protected function convertOptionsToTable(array $options, array $arguments): array
     {
-        $output = new BufferedOutput;
+        $output = new BufferedOutput(
+            decorated: !empty($arguments['ansi']),
+        );
 
         (new CompactTable($output))->display($options);
 
@@ -195,7 +197,7 @@ class FuzzyFinder
         return $values;
     }
 
-    protected function getOptionArguments(array $arguments): array
+    protected function getInternalArguments(array $arguments): array
     {
         return [
             ...$arguments,
@@ -234,7 +236,7 @@ class FuzzyFinder
     {
         return [
             ...static::$defaultArguments,
-            ...$this->getOptionArguments(
+            ...$this->getInternalArguments(
                 $this->arguments,
             ),
         ];
