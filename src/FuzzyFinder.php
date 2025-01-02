@@ -118,9 +118,9 @@ class FuzzyFinder
 
         foreach (array_filter($selected) as $value) {
             $key = substr(
-                $value,
+                (string) $value,
                 0,
-                strpos($value, static::$delimiter),
+                strpos((string) $value, static::$delimiter),
             );
 
             $values[] = $options[$key];
