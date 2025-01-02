@@ -114,14 +114,16 @@ class FuzzyFinder
 
     protected function normalizeOptionsType($options): array
     {
-        return match (true) {
-            // Collections
-            $options instanceof Traversable => iterator_to_array($options),
-            // toArray()
-            is_object($options) && method_exists($options, 'toArray') => $options->toArray(),
-            // ...
-            default => (array) $options,
-        };
+        return array_values(
+            match (true) {
+                // Collections
+                $options instanceof Traversable => iterator_to_array($options),
+                // toArray()
+                is_object($options) && method_exists($options, 'toArray') => $options->toArray(),
+                // ...
+                default => (array) $options,
+            }
+        );
     }
 
     protected function prepareOptionsForCommand($options): array

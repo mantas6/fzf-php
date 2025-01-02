@@ -23,3 +23,16 @@ it('works with arrays', function (): void {
 
     expect($selection)->toBe(['Apples', '1kg']);
 });
+
+it('works with non list arrays', function (): void {
+    $selection = fzf(
+        options: [
+            20 => ['Apples', '1kg'],
+            35 => ['Oranges', '2kg'],
+            36 => ['Grapefruits', '3kg'],
+        ],
+        arguments: ['filter' => 'Oranges'],
+    );
+
+    expect($selection)->toBe(['Oranges', '2kg']);
+});
