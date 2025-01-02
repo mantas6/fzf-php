@@ -7,7 +7,6 @@ use Mantas6\FzfPhp\Concerns\Formatter;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Formatters\AssociativeFormatter;
 use Mantas6\FzfPhp\Formatters\NullFormatter;
-use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\Process;
 
 class FuzzyFinder
@@ -78,13 +77,11 @@ class FuzzyFinder
             };
         }
 
-        $input = new InputStream;
-
         $arguments = $this->getAllArguments();
 
         $process = new Process(
             command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
-            input: $input,
+            input: implode(PHP_EOL, $this->formatter->before($options, $arguments)),
             timeout: 0,
         );
 
@@ -94,8 +91,6 @@ class FuzzyFinder
             'FZF_DEFAULT_OPTS_FILE' => null,
         ]);
 
-        $input->write(implode(PHP_EOL, $this->formatter->before($options, $arguments)));
-        $input->close();
         $process->wait();
 
         $exitCode = $process->getExitCode();
