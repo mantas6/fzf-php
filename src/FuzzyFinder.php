@@ -72,8 +72,7 @@ class FuzzyFinder
         static::prepareBinary();
 
         $arguments = $this->getAllArguments();
-
-        $options = array_values((array) $options);
+        $options = $this->normalizeOptionsType($options);
 
         $process = new Process(
             command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
@@ -110,6 +109,16 @@ class FuzzyFinder
         }
 
         return $selected[0];
+    }
+
+    protected function normalizeOptionsType($options): array
+    {
+        return match (true) {
+            // toArray()
+            is_object($options) && method_exists($options, 'toArray') => $options->toArray(),
+            // ...
+            default => (array) $options,
+        };
     }
 
     protected function prepareOptionsForCommand($options): array
