@@ -21,8 +21,9 @@ class FuzzyFinder
 
     protected static string $delimiter = ':';
 
-    /** @var array <string> */
     protected static ?array $command = null;
+
+    protected $presenter;
 
     /**
      * @param  array <string>  $cmd
@@ -51,6 +52,13 @@ class FuzzyFinder
     public function arguments(array $args): self
     {
         $this->arguments = $args;
+
+        return $this;
+    }
+
+    public function present(callable $presenter): self
+    {
+        $this->presenter = $presenter;
 
         return $this;
     }
@@ -124,6 +132,7 @@ class FuzzyFinder
 
         foreach ($options as $value) {
             $processed[] = match (true) {
+                $this->presenter !== null => call_user_func($this->presenter, $value),
                 is_string($value) => [$value],
                 $value instanceof PresentsForFinder => $value->presentForFinder(),
                 is_object($value) && method_exists($value, 'toArray') => $value->toArray(),

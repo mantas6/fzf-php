@@ -19,7 +19,7 @@ class Presentable implements PresentsForFinder
     }
 }
 
-it('works with objects that implement toArray', function (): void {
+it('works with objects that implement interface', function (): void {
     $apple = new Presentable('Apple');
 
     $selection = fzf(

@@ -100,6 +100,33 @@ class Model implements PresentsForFinder
 }
 ```
 
+##### Providing a presenter
+
+To untie the presentation from the model, more reusable approach can be used.
+
+```php
+<?php
+
+$selected = fzf(
+    options: [
+        new Model('Apple'),
+        new Model('Orange'),
+        new Model('Grapefruits'),
+    ],
+
+    present: fn (Model $item): array => [$item->name],
+);
+
+// or
+
+$selected = fzf(
+    // ...
+    present: new ModelPresenterInvokable,
+);
+```
+
+- The callable must always return an `array`
+
 ### Multi mode
 
 Retrieve multiple options from a list.
