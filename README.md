@@ -187,7 +187,17 @@ Configuration can be passed to pre-configure the instance.
 
 $finder = fzf(arguments: ['height' => '50%']);
 
-$finder->ask(['Apple', 'Orange', 'Grapefruit']);
+$finder->ask(['apple', 'orange', 'grapefruit']);
+```
+
+Additional configuration is available through the class methods.
+
+```php
+<?php
+
+$finder->present(...);
+
+$finder->arguments(...);
 ```
 
 ## Configuration

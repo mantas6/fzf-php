@@ -6,8 +6,8 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
-* @internal
-*/
+ * @internal
+ */
 class CompactTable
 {
     public function __construct(

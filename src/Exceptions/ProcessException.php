@@ -5,8 +5,8 @@ namespace Mantas6\FzfPhp\Exceptions;
 use Exception;
 
 /**
-* @internal
-*/
+ * @internal
+ */
 class ProcessException extends Exception
 {
     //
