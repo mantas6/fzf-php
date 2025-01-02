@@ -132,10 +132,15 @@ class FuzzyFinder
 
         foreach ($options as $value) {
             $processed[] = match (true) {
+                // Presenter
                 $this->presenter !== null => call_user_func($this->presenter, $value),
+                // Strings
                 is_string($value) => [$value],
+                // Interface
                 $value instanceof PresentsForFinder => $value->presentForFinder(),
+                // toArray()
                 is_object($value) && method_exists($value, 'toArray') => $value->toArray(),
+                // ...
                 default => (array) $value,
             };
         }

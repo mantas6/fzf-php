@@ -5,6 +5,9 @@ namespace Mantas6\FzfPhp\Support;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+* @internal
+*/
 class CompactTable
 {
     public function __construct(
