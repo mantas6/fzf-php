@@ -9,7 +9,7 @@
 </p>
 
 ------
-This package allows you to create [`fzf`](https://github.com/junegunn/fzf) powered menus straight from PHP code.
+This package allows you to create [`fzf`](https://github.com/junegunn/fzf) powered menus straight from your PHP code.
 
 ## Features
 
