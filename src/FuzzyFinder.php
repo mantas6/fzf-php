@@ -4,6 +4,8 @@ namespace Mantas6\FzfPhp;
 
 use Composer\Autoload\ClassLoader;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
+use Mantas6\FzfPhp\Support\CompactTable;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 
 class FuzzyFinder
@@ -103,6 +105,9 @@ class FuzzyFinder
 
     protected function prepareOptionsForCommand(array $options): array
     {
+        $options = $this->prepareOptionsForTable($options);
+        $options = $this->convertOptionsToTable($options);
+
         $processed = [];
 
         foreach ($options as $key => $value) {
@@ -110,6 +115,31 @@ class FuzzyFinder
         }
 
         return $processed;
+    }
+
+    protected function prepareOptionsForTable(array $options): array
+    {
+        $processed = [];
+
+        foreach ($options as $value) {
+            $processed[] = match (true) {
+                is_string($value) => [$value],
+                default => $value,
+            };
+        }
+
+        return $processed;
+    }
+
+    protected function convertOptionsToTable(array $options): array
+    {
+        $output = new BufferedOutput;
+
+        (new CompactTable($output))->display($options);
+
+        return array_filter(
+            explode(PHP_EOL, $output->fetch())
+        );
     }
 
     protected function mapFinderOutput(array $selected, array $options): array

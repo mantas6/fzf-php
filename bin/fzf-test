@@ -1,0 +1,32 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Mantas6\FzfPhp\Downloader;
+
+use function Mantas6\FzfPhp\fzf;
+
+foreach (
+    [
+        dirname(__DIR__, 4) . '/vendor/autoload.php',
+        dirname(__DIR__) . '/vendor/autoload.php',
+    ] as $autoloadPath
+) {
+    if (file_exists($autoloadPath)) {
+        include_once $autoloadPath;
+
+        break;
+    }
+}
+
+$selection = fzf(
+    options: [
+        ['Apple', '1kg'],
+        ['Orange', '2kg'],
+        ['Grapefruit', '3kg'],
+    ],
+    arguments: ['height' => '~40%'],
+);
+
+dd($selection);

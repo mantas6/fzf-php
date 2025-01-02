@@ -28,6 +28,12 @@ composer require mantas6/fzf-php
 
 ### Options
 
+Options must be an array, containing:
+
+- Strings
+- Arrays
+- Objects - must contain `toArray()` method
+
 Retrieve a single option from a list:
 ```php
 <?php
@@ -39,7 +45,24 @@ $selected = fzf(['Apple', 'Orange', 'Grapefruit']);
 ```
 - Returns `null` if user cancels (^C) the prompt
 
+Pass a nested array:
+
+```php
+<?php
+
+$selected = fzf(
+    options: [
+        ['Apples', '1kg'],
+        ['Oranges', '2kg'],
+        ['Grapefruits', '3kg'],
+    ]
+);
+
+// ['Apples', '1kg']
+```
+
 Retrieve multiple options from a list:
+
 ```php
 <?php
 
