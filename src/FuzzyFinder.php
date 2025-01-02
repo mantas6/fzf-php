@@ -73,7 +73,7 @@ class FuzzyFinder
 
         $arguments = $this->getAllArguments();
 
-        $options = array_values($options);
+        $options = array_values((array) $options);
 
         $process = new Process(
             command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
@@ -131,21 +131,26 @@ class FuzzyFinder
         $processed = [];
 
         foreach ($options as $value) {
-            $processed[] = match (true) {
-                // Presenter
-                $this->presenter !== null => call_user_func($this->presenter, $value),
-                // Strings
-                is_string($value) => [$value],
-                // Interface
-                $value instanceof PresentsForFinder => $value->presentForFinder(),
-                // toArray()
-                is_object($value) && method_exists($value, 'toArray') => $value->toArray(),
-                // ...
-                default => (array) $value,
-            };
+            $processed[] = $this->prepareRowForTable($value);
         }
 
         return $processed;
+    }
+
+    protected function prepareRowForTable($value): array
+    {
+        return match (true) {
+            // Presenter
+            $this->presenter !== null => call_user_func($this->presenter, $value),
+            // Strings
+            is_string($value) => [$value],
+            // Interface
+            $value instanceof PresentsForFinder => $value->presentForFinder(),
+            // toArray()
+            is_object($value) && method_exists($value, 'toArray') => $value->toArray(),
+            // ...
+            default => (array) $value,
+        };
     }
 
     protected function convertOptionsToTable(array $options): array
