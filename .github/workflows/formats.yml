@@ -6,6 +6,7 @@ on: ['push', 'pull_request']
 jobs:
   ci:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
 
     strategy:
       fail-fast: true
