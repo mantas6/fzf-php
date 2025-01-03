@@ -1,6 +1,6 @@
 {
     "name": "mantas6/fzf-php",
-    "description": "Interactive fzf terminal menus in PHP",
+    "description": "Interactive fzf command line menus in PHP",
     "keywords": ["php", "fzf", "package", "terminal", "tui", "prompt"],
     "license": "MIT",
     "authors": [
