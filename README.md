@@ -144,6 +144,31 @@ The class needs to meet one of the following requirements:
 - Must implement the native `Traversable` interface
 - Needs to implement `toArray()` method
 
+### Options styling
+
+Option columns can be styling using `cell()` helper function.
+
+```php
+<?php
+
+use function Mantas6\FzfPhp\cell;
+
+$selected = fzf(
+    options: [
+        [
+            'Apples',
+            '1kg',
+            cell('Fresh', fg: 'green'),
+        ],
+        [
+            'Oranges',
+            '2kg',
+            cell('Stale', fg: 'red'),
+        ],
+    ]
+);
+```
+
 ### Multi mode
 
 Retrieve multiple options from a list.

@@ -200,7 +200,10 @@ class FuzzyFinder
     protected function getInternalArguments(array $arguments): array
     {
         return [
+            'ansi' => true,
+
             ...$arguments,
+
             'd' => false,
             'delimiter' => static::$delimiter,
             'with-nth' => '2..',
