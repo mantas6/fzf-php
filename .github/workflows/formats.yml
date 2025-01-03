@@ -50,5 +50,5 @@ jobs:
     - name: Rector Checks
       run: composer test:refacto
 
-    # - name: Type Checks
-    #   run: composer test:types
+    - name: Type Checks
+      run: composer test:types
