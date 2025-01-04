@@ -146,7 +146,7 @@ The class needs to meet one of the following requirements:
 
 ### Options styling
 
-Option columns can be styling using `cell()` helper function.
+Option columns can be styling using `cell()` helper function in the presenter callback.
 
 ```php
 <?php
@@ -155,19 +155,27 @@ use function Mantas6\FzfPhp\cell;
 
 $selected = fzf(
     options: [
-        [
-            'Apples',
-            '1kg',
-            cell('Fresh', fg: 'green'),
-        ],
-        [
-            'Oranges',
-            '2kg',
-            cell('Stale', fg: 'red'),
-        ],
-    ]
+        ['name' => 'Apples', 'weight' => 1000],
+        ['name' => 'Oranges', 'weight' => 2000],
+        ['name' => 'Grapefruits', 'weight' => 3000],
+    ],
+
+    // Styling individual items
+    present: fn (array $item): array => [
+        $item['name'],
+
+        cell($item['weight'], fg: $item['weight'] > 2000 ? 'red' : 'green'),
+    ],
 );
 ```
+
+Formatting options are:
+
+- `string` **value** - text of the cell
+- `string` **align** - alignment in the table (left, right, center)
+- `string` **fg** - foreground color
+- `string` **bg** - background color
+- `int` **colspan** - column span
 
 ### Multi mode
 

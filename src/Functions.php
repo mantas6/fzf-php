@@ -27,13 +27,13 @@ if (!function_exists('FzfPhp\fzf')) {
 
 if (!function_exists('FzfPhp\cell')) {
     function cell(
-        string $value,
+        $value,
         string $align = TableCellStyle::DEFAULT_ALIGN,
         string $fg = 'default',
         string $bg = 'default',
         int $colspan = 1,
     ): mixed {
-        return new TableCell($value, [
+        return new TableCell((string) $value, [
             'colspan' => $colspan,
             'style' => new TableCellStyle([
                 'align' => $align,

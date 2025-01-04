@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 use Mantas6\FzfPhp\Downloader;
 
+use function Mantas6\FzfPhp\cell;
 use function Mantas6\FzfPhp\fzf;
 
 foreach (
@@ -22,7 +23,7 @@ foreach (
 
 class Model
 {
-    public function __construct(protected string $name, protected int $weight)
+    public function __construct(public string $name, public int $weight)
     {
     }
 
@@ -39,6 +40,10 @@ $selection = fzf(
         new Model('Grapefruit', 1000),
     ],
     arguments: ['height' => '~40%'],
+    present: fn ($model) => [
+        $model->name,
+        cell((string) $model->weight, fg: $model->weight >= 1000 ? 'red' : 'green')
+    ],
 );
 
 dd($selection);
