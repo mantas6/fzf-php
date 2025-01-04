@@ -14,7 +14,7 @@ if (!function_exists('FzfPhp\fzf')) {
         $finder = (new FuzzyFinder)
             ->arguments($arguments);
 
-        if ($present !== null) {
+        if ($present instanceof Closure) {
             $finder->present($present);
         }
 

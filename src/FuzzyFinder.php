@@ -156,7 +156,7 @@ class FuzzyFinder
     {
         return match (true) {
             // Presenter
-            $this->presenter !== null => ($this->presenter)($value),
+            $this->presenter instanceof Closure => ($this->presenter)($value),
             // Strings
             is_string($value) => [$value],
             // Interface
