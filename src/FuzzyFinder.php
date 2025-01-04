@@ -2,6 +2,7 @@
 
 namespace Mantas6\FzfPhp;
 
+use Closure;
 use Composer\Autoload\ClassLoader;
 use Mantas6\FzfPhp\Concerns\PresentsForFinder;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
@@ -24,7 +25,7 @@ class FuzzyFinder
 
     protected static ?array $command = null;
 
-    protected $presenter;
+    protected ?Closure $presenter = null;
 
     /**
      * @param  array <string>  $cmd
@@ -57,7 +58,7 @@ class FuzzyFinder
         return $this;
     }
 
-    public function present(callable $presenter): self
+    public function present(Closure $presenter): self
     {
         $this->presenter = $presenter;
 

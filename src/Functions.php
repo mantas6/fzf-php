@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Mantas6\FzfPhp;
 
+use Closure;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 
 if (!function_exists('FzfPhp\fzf')) {
-    function fzf($options = null, array $arguments = [], ?callable $present = null): mixed
+    function fzf($options = null, array $arguments = [], ?Closure $present = null): mixed
     {
         $finder = (new FuzzyFinder)
             ->arguments($arguments);
