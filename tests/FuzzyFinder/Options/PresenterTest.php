@@ -46,4 +46,4 @@ it('works with cell helper', function (): void {
     );
 
     expect($selection)->toBe(['name' => 'Oranges', 'weight' => 2000]);
-})->todo('assert the rendering');
+})->note('assert the rendering');

@@ -20,4 +20,4 @@ it('doesnt retain system fzf env variables', function (): void {
     expect($result)->not->toContain('FZF_DEFAULT_COMMAND')
         ->not->toContain('FZF_DEFAULT_OPTS')
         ->not->toContain('FZF_DEFAULT_OPTS_FILE');
-})->todo('need to find a way to fake the env variables');
+})->note('need to find a way to fake the env variables');
