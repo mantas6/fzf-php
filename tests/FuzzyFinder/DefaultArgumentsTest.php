@@ -6,10 +6,7 @@ use Mantas6\FzfPhp\FuzzyFinder;
 
 use function Mantas6\FzfPhp\fzf;
 
-beforeAll(fn () => FuzzyFinder::usingCommand(['./bin/fzf-fake']));
-afterAll(fn () => FuzzyFinder::usingDefaultCommand());
-
-afterEach(fn () => FuzzyFinder::usingDefaultArguments([]));
+beforeEach(fn () => FuzzyFinder::usingCommand(['./bin/fzf-fake']));
 
 it('adds default arguments when set', function (): void {
     FuzzyFinder::usingDefaultArguments(['pointer' => '->']);

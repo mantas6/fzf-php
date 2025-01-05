@@ -6,9 +6,7 @@ use Mantas6\FzfPhp\FuzzyFinder;
 
 use function Mantas6\FzfPhp\fzf;
 
-afterAll(fn () => FuzzyFinder::usingDefaultCommand());
-
-beforeAll(function (): void {
+beforeEach(function (): void {
     FuzzyFinder::usingCommand(['./bin/fzf-fake']);
 
     // putenv('FZF_DEFAULT_COMMAND=testing');
