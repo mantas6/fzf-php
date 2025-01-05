@@ -27,3 +27,19 @@ it('fills table cell object', function (): void {
             'cellFormat' => null,
         ]);
 });
+
+it('fills table cell object with default values', function (): void {
+    $cell = cell('some text');
+
+    expect($cell)->toBeInstanceOf(TableCell::class);
+    expect($cell->__toString())->toBe('some text');
+    expect($cell->getColspan())->toBe(1);
+    expect($cell->getStyle()->getOptions())
+        ->toBe([
+            'fg' => 'default',
+            'bg' => 'default',
+            'options' => null,
+            'align' => 'left',
+            'cellFormat' => null,
+        ]);
+});
