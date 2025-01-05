@@ -33,7 +33,7 @@ if (!function_exists('FzfPhp\cell')) {
         string $fg = 'default',
         string $bg = 'default',
         int $colspan = 1,
-    ): mixed {
+    ): TableCell {
         return new TableCell((string) $value, [
             'colspan' => $colspan,
             'style' => new TableCellStyle([
