@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use function Mantas6\FzfPhp\fzf;
 
 class Model
