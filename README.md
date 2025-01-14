@@ -15,6 +15,7 @@ This package allows you to create [`fzf`](https://github.com/junegunn/fzf) power
 
 - Automatic `fzf` binary download
 - Inline `fzf` configuration
+- Option list styling
 
 ## Installation
 
@@ -171,11 +172,26 @@ $selected = fzf(
 
 Formatting options are:
 
-- `string` **value** - text of the cell
-- `string` **align** - alignment in the table (left, right, center)
-- `string` **fg** - foreground color
-- `string` **bg** - background color
-- `int` **colspan** - column span
+```php
+<?php
+
+cell(
+    // Text of the cell
+    value: 'Text displayed',
+
+    // Alignment in the table (left, right, center)
+    align: 'right',
+
+    // Foreground color
+    fg: 'white',
+
+    // Background color
+    bg: 'red',
+
+    // Column span
+    colspan: 2,
+);
+```
 
 ### Multi mode
 
