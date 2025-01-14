@@ -193,6 +193,8 @@ cell(
 );
 ```
 
+More information can be found at [Symfony Docs: Table](https://symfony.com/doc/current/components/console/helpers/table.html)
+
 ### Multi mode
 
 Retrieve multiple options from a list.
@@ -300,3 +302,4 @@ The `fzf` binary is downloaded automatically on the first use, however you can i
 
 See also:
 - [`fzf` GitHub page](https://github.com/junegunn/fzf)
+- [Symfony Docs: Table](https://symfony.com/doc/current/components/console/helpers/table.html)
