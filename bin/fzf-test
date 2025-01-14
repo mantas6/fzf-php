@@ -4,6 +4,8 @@
 declare(strict_types=1);
 
 use Mantas6\FzfPhp\Downloader;
+use Mantas6\FzfPhp\FuzzyFinder;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 use function Mantas6\FzfPhp\cell;
 use function Mantas6\FzfPhp\fzf;
@@ -23,9 +25,7 @@ foreach (
 
 class Model
 {
-    public function __construct(public string $name, public int $weight)
-    {
-    }
+    public function __construct(public string $name, public int $weight) {}
 
     public function toArray()
     {
@@ -33,22 +33,26 @@ class Model
     }
 }
 
-$filename = getcwd(). '/abc';
+$filename = getcwd() . '/abc';
 
-$selection = fzf(
-    options: [
-        new Model('Apple', 250),
-        new Model('Orange', 500),
-        new Model('Grapefruit', 1000),
-    ],
+/** @var FuzzyFinder */
+$finder = fzf(
     arguments: [
         // 'height' => '~40%',
-        'preview' => "fzf-socket unix://$filename test {}"
+        // 'preview' => "fzf-socket unix://$filename test {}"
     ],
-    present: fn ($model) => [
+    present: fn($model) => [
         $model->name,
         cell((string) $model->weight, fg: $model->weight >= 1000 ? 'red' : 'green')
     ],
 );
+
+$finder->preview = fn (Model $model, SymfonyStyle $io) => $io->note($model->name);
+
+$selection = $finder->ask([
+    new Model('Apple', 250),
+    new Model('Orange', 500),
+    new Model('Grapefruit', 1000),
+]);
 
 dd($selection);

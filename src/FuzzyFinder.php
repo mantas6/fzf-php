@@ -9,7 +9,9 @@ use Composer\Autoload\ClassLoader;
 use Mantas6\FzfPhp\Concerns\PresentsForFinder;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Support\CompactTable;
+use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use Traversable;
 
@@ -28,6 +30,8 @@ class FuzzyFinder
     protected static ?array $command = null;
 
     protected ?Closure $presenter = null;
+
+    public ?Closure $preview = null;
 
     /**
      * @param  array <string>  $cmd
@@ -75,7 +79,17 @@ class FuzzyFinder
     {
         static::prepareBinary();
 
-        $arguments = $this->getAllArguments();
+        $socket = new Socket;
+        $socketPath = $socket->start();
+
+        $arguments = [
+            ...static::$defaultArguments,
+            ...$this->getInternalArguments(
+                $this->arguments,
+                $socketPath,
+            ),
+        ];
+
         $options = $this->normalizeOptionsType($options);
 
         $process = new Process(
@@ -90,7 +104,11 @@ class FuzzyFinder
             'FZF_DEFAULT_OPTS_FILE' => null,
         ]);
 
-        $process->wait();
+        while ($process->isRunning()) {
+            $socket->listen(fn (string $input) => $this->respondToSocket($input, $options));
+        }
+
+        $socket->stop();
 
         $exitCode = $process->getExitCode();
         $error = $process->getErrorOutput();
@@ -115,6 +133,23 @@ class FuzzyFinder
         return $selected[0];
     }
 
+    protected function respondToSocket(string $input, array $options): string
+    {
+        $input = explode(PHP_EOL, $input);
+        $action = array_shift($input);
+        $selection = implode(PHP_EOL, $input);
+
+        $mapped = $this->mapFinderOutput([$selection], $options);
+
+        $buf = new BufferedOutput(decorated: true);
+
+        $io = new SymfonyStyle(new StringInput(''), $buf);
+
+        ($this->preview)($mapped[0], $io);
+
+        return $buf->fetch();
+    }
+
     protected function normalizeOptionsType($options): array
     {
         return array_values(
@@ -123,7 +158,7 @@ class FuzzyFinder
                 $options instanceof Traversable => iterator_to_array($options),
                 // toArray()
                 is_object($options) && method_exists($options, 'toArray') => $options->toArray(),
-                // ...
+                    // ...
                 default => (array) $options,
             }
         );
@@ -165,7 +200,7 @@ class FuzzyFinder
             $value instanceof PresentsForFinder => $value->presentForFinder(),
             // toArray()
             is_object($value) && method_exists($value, 'toArray') => $value->toArray(),
-            // ...
+                // ...
             default => (array) $value,
         };
     }
@@ -200,7 +235,7 @@ class FuzzyFinder
         return $values;
     }
 
-    protected function getInternalArguments(array $arguments): array
+    protected function getInternalArguments(array $arguments, string $socketPath): array
     {
         return [
             'ansi' => true,
@@ -210,6 +245,7 @@ class FuzzyFinder
             'd' => false,
             'delimiter' => static::$delimiter,
             'with-nth' => '2..',
+            'preview' => "./bin/fzf-socket unix://$socketPath preview {}",
         ];
     }
 
@@ -236,16 +272,6 @@ class FuzzyFinder
         }
 
         return $commandArguments;
-    }
-
-    protected function getAllArguments(): array
-    {
-        return [
-            ...static::$defaultArguments,
-            ...$this->getInternalArguments(
-                $this->arguments,
-            ),
-        ];
     }
 
     /**

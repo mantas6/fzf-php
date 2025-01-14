@@ -19,7 +19,9 @@ if (!$socket) {
     exit(1);
 }
 
-fwrite($socket, $selection);
+fwrite($socket, $action . PHP_EOL);
+fwrite($socket, $selection . PHP_EOL);
+
 stream_socket_shutdown($socket, STREAM_SHUT_WR);
 
 while (!feof($socket)) {
