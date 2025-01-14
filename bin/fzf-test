@@ -33,13 +33,18 @@ class Model
     }
 }
 
+$filename = getcwd(). '/abc';
+
 $selection = fzf(
     options: [
         new Model('Apple', 250),
         new Model('Orange', 500),
         new Model('Grapefruit', 1000),
     ],
-    arguments: ['height' => '~40%'],
+    arguments: [
+        // 'height' => '~40%',
+        'preview' => "fzf-socket unix://$filename test {}"
+    ],
     present: fn ($model) => [
         $model->name,
         cell((string) $model->weight, fg: $model->weight >= 1000 ? 'red' : 'green')

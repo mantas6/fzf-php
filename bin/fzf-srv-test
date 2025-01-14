@@ -1,0 +1,36 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+// $filename = tempnam('/tmp', 'fzf-php');
+
+$filename = getcwd(). '/abc';
+
+unlink($filename);
+
+$socket = stream_socket_server("unix://$filename", $errno, $errstr);
+
+var_dump($errno);
+var_dump($errstr);
+
+while (true) {
+    while ($conn = @stream_socket_accept($socket, 1)) {
+        echo "Accepting connection\n";
+        $request = '';
+
+        while (!feof($conn)) {
+            $request .= fgets($conn, 1024);
+        }
+
+        echo $request . "\n";
+
+        fwrite($conn, strtoupper($request) . "\n");
+
+        fclose($conn);
+    }
+
+    sleep(1);
+}
+
+fclose($socket);
