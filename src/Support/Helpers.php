@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mantas6\FzfPhp\Support;
 
 use Composer\Autoload\ClassLoader;

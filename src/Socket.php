@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mantas6\FzfPhp;
 
 use Closure;
 
 /**
-* @internal
-*/
+ * @internal
+ */
 class Socket
 {
     private $socket;
@@ -35,7 +37,7 @@ class Socket
         $read = [$this->socket];
         $write = [];
 
-        if (!stream_select($read, $write, $write, 0)) {
+        if (in_array(stream_select($read, $write, $write, 0), [0, false], true)) {
             return;
         }
 
@@ -53,7 +55,7 @@ class Socket
 
         $response = $handler($request);
 
-        fwrite($conn, $response);
+        fwrite($conn, (string) $response);
 
         fclose($conn);
     }

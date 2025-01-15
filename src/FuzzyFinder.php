@@ -113,7 +113,7 @@ class FuzzyFinder
         ]);
 
         while ($process->isRunning()) {
-            $socket->listen(function (string $input) use ($options, $process) {
+            $socket->listen(function (string $input) use ($options, $process): string {
                 try {
                     return $this->respondToSocket($input, $options);
                 } catch (Throwable $e) {
@@ -151,7 +151,7 @@ class FuzzyFinder
     protected function respondToSocket(string $input, array $options): string
     {
         $input = explode(PHP_EOL, $input);
-        $action = array_shift($input);
+        array_shift($input);
         $selection = implode(PHP_EOL, $input);
 
         $mapped = $this->mapFinderOutput([$selection], $options);
@@ -173,7 +173,7 @@ class FuzzyFinder
                 $options instanceof Traversable => iterator_to_array($options),
                 // toArray()
                 is_object($options) && method_exists($options, 'toArray') => $options->toArray(),
-                    // ...
+                // ...
                 default => (array) $options,
             }
         );
@@ -215,7 +215,7 @@ class FuzzyFinder
             $value instanceof PresentsForFinder => $value->presentForFinder(),
             // toArray()
             is_object($value) && method_exists($value, 'toArray') => $value->toArray(),
-                // ...
+            // ...
             default => (array) $value,
         };
     }
