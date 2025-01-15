@@ -25,8 +25,8 @@ class Socket
 
     public function stop(): void
     {
-        // Need to stop socket server here
-        //
+        stream_socket_shutdown($this->socket, STREAM_SHUT_RDWR);
+
         if (file_exists($this->path)) {
             unlink($this->path);
         }
