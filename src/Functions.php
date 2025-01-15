@@ -19,7 +19,7 @@ if (!function_exists('FzfPhp\fzf')) {
         }
 
         if ($preview instanceof Closure) {
-            $finder->present($present);
+            $finder->preview($preview);
         }
 
         if ($options !== null) {
