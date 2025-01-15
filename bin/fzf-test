@@ -47,7 +47,7 @@ $finder = fzf(
     ],
 );
 
-$finder->preview = fn (Model $model, SymfonyStyle $io) => $io->note($model->name);
+$finder->preview(fn (Model $model, SymfonyStyle $io) => $io->note($model->name));
 
 $selection = $finder->ask([
     new Model('Apple', 250),

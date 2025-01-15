@@ -31,7 +31,7 @@ class FuzzyFinder
 
     protected ?Closure $presenter = null;
 
-    public ?Closure $preview = null;
+    protected ?Closure $preview = null;
 
     /**
      * @param  array <string>  $cmd
@@ -64,9 +64,16 @@ class FuzzyFinder
         return $this;
     }
 
-    public function present(Closure $presenter): self
+    public function present(Closure $callback): self
     {
-        $this->presenter = $presenter;
+        $this->presenter = $callback;
+
+        return $this;
+    }
+
+    public function preview(Closure $callback): self
+    {
+        $this->preview = $callback;
 
         return $this;
     }
@@ -237,9 +244,7 @@ class FuzzyFinder
 
     protected function getInternalArguments(array $arguments, string $socketPath): array
     {
-        $basePath = Helpers::basePath();
-
-        return [
+        $args = [
             'ansi' => true,
 
             ...$arguments,
@@ -247,8 +252,14 @@ class FuzzyFinder
             'd' => false,
             'delimiter' => static::$delimiter,
             'with-nth' => '2..',
-            'preview' => "$basePath/bin/fzf-socket unix://$socketPath preview {}",
         ];
+
+        if ($this->preview instanceof Closure) {
+            $basePath = Helpers::basePath();
+            $args['preview'] = "$basePath/bin/fzf-socket unix://$socketPath preview {}";
+        }
+
+        return $args;
     }
 
     protected function isMultiMode(): bool
