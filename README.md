@@ -16,6 +16,7 @@ This package allows you to create [`fzf`](https://github.com/junegunn/fzf) power
 - Automatic `fzf` binary download
 - Inline `fzf` configuration
 - Option list styling
+- Selected option preview
 
 ## Installation
 
@@ -194,6 +195,23 @@ cell(
 ```
 
 More information can be found at [Symfony Docs: Table](https://symfony.com/doc/current/components/console/helpers/table.html)
+
+### Options preview
+
+Preview window can be enabled for each selected option.
+
+```php
+<?php
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+$selected = fzf(
+    options: ['Apple', 'Orange', 'Grapefruit'],
+
+    preview: fn (string $item, SymfonyStyle $io) => $io->writeLine(strtoupper($item)),
+);
+```
+
+`SymfonyStyle` provides basic elements for formatting.
 
 ### Multi mode
 
