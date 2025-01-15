@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Mantas6\FzfPhp;
 
-use Composer\Autoload\ClassLoader;
 use Exception;
+use Mantas6\FzfPhp\Support\Helpers;
 use PharData;
 
 class Downloader
@@ -29,9 +29,7 @@ class Downloader
         $archive = basename($downloadUrl);
         static::downloadFile($downloadUrl, $archive);
 
-        $basePath = dirname(
-            array_keys(ClassLoader::getRegisteredLoaders())[0]
-        );
+        $basePath = Helpers::basePath();
 
         (new PharData($archive))->extractTo(
             directory: "$basePath/vendor/bin",

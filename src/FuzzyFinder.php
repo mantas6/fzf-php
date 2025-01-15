@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Mantas6\FzfPhp;
 
 use Closure;
-use Composer\Autoload\ClassLoader;
 use Mantas6\FzfPhp\Concerns\PresentsForFinder;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Support\CompactTable;
+use Mantas6\FzfPhp\Support\Helpers;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -237,6 +237,8 @@ class FuzzyFinder
 
     protected function getInternalArguments(array $arguments, string $socketPath): array
     {
+        $basePath = Helpers::basePath();
+
         return [
             'ansi' => true,
 
@@ -245,7 +247,7 @@ class FuzzyFinder
             'd' => false,
             'delimiter' => static::$delimiter,
             'with-nth' => '2..',
-            'preview' => "./bin/fzf-socket unix://$socketPath preview {}",
+            'preview' => "$basePath/bin/fzf-socket unix://$socketPath preview {}",
         ];
     }
 
@@ -283,9 +285,7 @@ class FuzzyFinder
             return static::$command;
         }
 
-        $basePath = dirname(
-            array_keys(ClassLoader::getRegisteredLoaders())[0]
-        );
+        $basePath = Helpers::basePath();
 
         return [$basePath . '/' . static::$defaultBinary];
     }
