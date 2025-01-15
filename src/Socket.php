@@ -32,7 +32,14 @@ class Socket
 
     public function listen(Closure $handler): void
     {
-        $conn = @stream_socket_accept($this->socket, 0.1);
+        $read = [$this->socket];
+        $write = [];
+
+        if (!stream_select($read, $write, $write, 0)) {
+            return;
+        }
+
+        $conn = stream_socket_accept($this->socket, 0.1);
 
         if ($conn === false) {
             return;
