@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
+use Throwable;
 use Traversable;
 
 class FuzzyFinder
@@ -112,7 +113,14 @@ class FuzzyFinder
         ]);
 
         while ($process->isRunning()) {
-            $socket->listen(fn (string $input) => $this->respondToSocket($input, $options));
+            $socket->listen(function (string $input) use ($options, $process) {
+                try {
+                    return $this->respondToSocket($input, $options);
+                } catch (Throwable $e) {
+                    $process->stop();
+                    throw $e;
+                }
+            });
         }
 
         $socket->stop();
