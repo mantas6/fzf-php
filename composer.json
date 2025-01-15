@@ -45,7 +45,8 @@
         }
     },
     "bin": [
-        "bin/fzf-php-install"
+        "bin/fzf-php-install",
+        "bin/fzf-php-socket"
     ],
     "scripts": {
         "refacto": "rector",
