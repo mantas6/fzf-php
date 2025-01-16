@@ -8,8 +8,11 @@ use function Mantas6\FzfPhp\fzf;
 
 $binPath = './vendor/bin/fzf';
 
-beforeEach(fn (): ?bool => file_exists($binPath) ? unlink($binPath) : null)
-    ->skip(fn () => !empty($_ENV['SKIP_INSTALL_TESTS']));
+beforeEach(function () use ($binPath) {
+    if (file_exists($binPath) && empty($_ENV['SKIP_INSTALL_TESTS'])) {
+        unlink($binPath);
+    }
+})->skip(fn () => !empty($_ENV['SKIP_INSTALL_TESTS']), 'no local installs');
 
 it('installs fzf binary', function () use ($binPath): void {
     Downloader::installLatestRelease();
@@ -29,4 +32,10 @@ it('installs fzf binary will script from bin', function () use ($binPath): void 
     expect(filesize($binPath))->not->toBe(0);
 
     fzf(['Apple'], ['filter' => 'Apple']);
+});
+
+it('installs fzf binary automatically when called', function (): void {
+    fzf(['Apple'], ['filter' => 'Apple']);
+
+    expect('./vendor/bin/fzf')->toBeFile();
 });
