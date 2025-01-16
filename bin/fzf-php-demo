@@ -4,6 +4,7 @@
 declare(strict_types=1);
 
 use Carbon\Carbon;
+use Mantas6\FzfPhp\Support\CompactTable;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 use function Mantas6\FzfPhp\cell;
@@ -144,13 +145,14 @@ class Task
 
     public function getPreview(SymfonyStyle $io)
     {
-        $io->definitionList(
-            ['Title' => $this->title],
-            ['Due At' => $this->getDueAt()],
-            ['Status' => $this->getStatus()],
-            ['Flag' => $this->getImportant()],
-            ['Priority' => $this->priority->format()],
-        );
+        $table = new CompactTable($io);
+        $table->display([
+            ['Title', '   ', $this->title],
+            ['Due At', '   ', $this->getDueAt()],
+            ['Status', '   ', $this->getStatus()],
+            ['Flag', '   ', $this->getImportant()],
+            ['Priority', '   ', $this->priority->format()],
+        ]);
 
         $io->block($this->description);
     }
