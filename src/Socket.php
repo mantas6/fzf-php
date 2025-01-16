@@ -6,7 +6,6 @@ namespace Mantas6\FzfPhp;
 
 use Closure;
 use Exception;
-use Symfony\Component\Process\Process;
 
 /**
  * @internal
@@ -70,8 +69,6 @@ class Socket
             throw new Exception('Failed to reserve a socket tmp file');
         }
 
-        $path = array_shift($path) . '-fzf-php';
-
-        return $path;
+        return array_shift($path) . '-fzf-php';
     }
 }
