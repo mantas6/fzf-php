@@ -28,7 +28,7 @@ it('passes non keyed arguments', function (): void {
 });
 
 it('does not pass arguments with false values', function (): void {
-    $selection = fzf(
+    fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
         arguments: ['wrap' => false],
     );
@@ -37,7 +37,7 @@ it('does not pass arguments with false values', function (): void {
 });
 
 it('does not pass single letter arguments with false values', function (): void {
-    $selection = fzf(
+    fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
         arguments: ['i' => false],
     );
@@ -46,7 +46,7 @@ it('does not pass single letter arguments with false values', function (): void 
 });
 
 it('passes single letter arguments', function (): void {
-    $selection = fzf(
+    fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
         arguments: ['i' => true],
     );
@@ -56,7 +56,7 @@ it('passes single letter arguments', function (): void {
 });
 
 it('passes single letter keyed arguments', function (): void {
-    $selection = fzf(
+    fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
         arguments: ['i' => ':'],
     );

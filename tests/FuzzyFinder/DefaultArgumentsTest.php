@@ -12,7 +12,7 @@ beforeEach(fn () => FuzzyFinder::usingProcessClass(FakeProcess::class));
 it('adds default arguments when set', function (): void {
     FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
 
-    $selection = fzf(['Apple', 'Orange', 'Grapefruit']);
+    fzf(['Apple', 'Orange', 'Grapefruit']);
 
     expect(FakeProcess::getLastCommandString())->toContain(' --pointer ->');
 });
@@ -20,7 +20,7 @@ it('adds default arguments when set', function (): void {
 it('adds to override default arguments', function (): void {
     FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
 
-    $selection = fzf(
+    fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
         arguments: ['pointer' => '>>'],
     );
