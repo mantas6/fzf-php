@@ -30,6 +30,8 @@ class FuzzyFinder
 
     protected static ?array $command = null;
 
+    protected static $processClass = Process::class;
+
     protected ?Closure $presenter = null;
 
     protected ?Closure $preview = null;
@@ -100,7 +102,7 @@ class FuzzyFinder
 
         $options = $this->normalizeOptionsType($options);
 
-        $process = new Process(
+        $process = new static::$processClass(
             command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
             input: implode(PHP_EOL, $this->prepareOptionsForCommand($options, $arguments)),
             timeout: 0,
