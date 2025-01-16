@@ -3,28 +3,32 @@
 declare(strict_types=1);
 
 use Mantas6\FzfPhp\FuzzyFinder;
+use Tests\FakeProcess;
 
 use function Mantas6\FzfPhp\fzf;
 
-beforeEach(fn () => FuzzyFinder::usingCommand(['./bin/fzf-fake']));
+beforeEach(function () {
+    FuzzyFinder::usingCommand(['./bin/fzf-fake']);
+    FuzzyFinder::usingProcessClass(FakeProcess::class);
+});
 
 it('passes keyed arguments', function (): void {
-    $selection = fzf(
+    fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
         arguments: ['height' => '40%'],
     );
 
-    expect($selection)->toContain(' --height 40%');
-})->skip();
+    expect(FakeProcess::getLastCommandString())->toContain(' --height 40%');
+});
 
 it('passes non keyed arguments', function (): void {
-    $selection = fzf(
+    fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
         arguments: ['wrap' => true],
     );
 
-    expect($selection)->toContain(' --wrap');
-})->skip();
+    expect(FakeProcess::getLastCommandString())->toContain(' --wrap');
+});
 
 it('does not pass arguments with false values', function (): void {
     $selection = fzf(
@@ -32,8 +36,8 @@ it('does not pass arguments with false values', function (): void {
         arguments: ['wrap' => false],
     );
 
-    expect($selection)->not->toContain(' --wrap');
-})->skip();
+    expect(FakeProcess::getLastCommandString())->not->toContain(' --wrap');
+});
 
 it('does not pass single letter arguments with false values', function (): void {
     $selection = fzf(
@@ -41,8 +45,8 @@ it('does not pass single letter arguments with false values', function (): void 
         arguments: ['i' => false],
     );
 
-    expect($selection)->not->toContain(' -i');
-})->skip();
+    expect(FakeProcess::getLastCommandString())->not->toContain(' -i');
+});
 
 it('passes single letter arguments', function (): void {
     $selection = fzf(
@@ -50,16 +54,16 @@ it('passes single letter arguments', function (): void {
         arguments: ['i' => true],
     );
 
-    expect($selection)
+    expect(FakeProcess::getLastCommandString())
         ->toContain(' -i');
-})->skip();
+});
 
 it('passes single letter keyed arguments', function (): void {
     $selection = fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
-        arguments: ['d' => ':'],
+        arguments: ['i' => ':'],
     );
 
-    expect($selection)
-        ->toContain(' -d :');
-})->skip();
+    expect(FakeProcess::getLastCommandString())
+        ->toContain(' -i :');
+});

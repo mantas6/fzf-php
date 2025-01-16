@@ -6,6 +6,7 @@ declare(strict_types=1);
 use Mantas6\FzfPhp\Downloader;
 use Mantas6\FzfPhp\FuzzyFinder;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Tests\FakeProcess;
 
 use function Mantas6\FzfPhp\cell;
 use function Mantas6\FzfPhp\fzf;
@@ -23,35 +24,12 @@ foreach (
     }
 }
 
-class Model
-{
-    public function __construct(public string $name, public int $weight) {}
+FuzzyFinder::usingProcessClass(FakeProcess::class);
 
-    public function toArray()
-    {
-        return [$this->name, $this->weight];
-    }
-}
-
-$filename = getcwd() . '/abc';
-
-/** @var FuzzyFinder */
-$finder = fzf(
-    arguments: [
-        // 'height' => '~40%',
-        // 'preview' => "fzf-socket unix://$filename test {}"
-    ],
-    present: fn($model) => [
-        $model->name,
-        cell((string) $model->weight, fg: $model->weight >= 1000 ? 'red' : 'green')
-    ],
-    preview: fn (Model $model, SymfonyStyle $io) => $io->note($model->name),
-);
-
-$selection = $finder->ask([
-    new Model('Apple', 250),
-    new Model('Orange', 500),
-    new Model('Grapefruit', 1000),
+$selection = fzf([
+    'First',
+    'Second',
+    'Third',
 ]);
 
 dd($selection);

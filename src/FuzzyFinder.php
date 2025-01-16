@@ -36,9 +36,6 @@ class FuzzyFinder
 
     protected ?Closure $preview = null;
 
-    /**
-     * @param  array <string>  $cmd
-     */
     public static function usingCommand(array $cmd): void
     {
         static::$command = $cmd;
@@ -49,17 +46,21 @@ class FuzzyFinder
         static::$command = null;
     }
 
-    /**
-     * @param  array <string, mixed>  $args
-     */
     public static function usingDefaultArguments(array $args): void
     {
         static::$defaultArguments = $args;
     }
 
-    /**
-     * @param  array <string, mixed>  $args
-     */
+    public static function usingProcessClass($class): void
+    {
+        static::$processClass = $class;
+    }
+
+    public static function usingDefaultProcessClass(): void
+    {
+        static::$processClass = Process::class;
+    }
+
     public function arguments(array $args): self
     {
         $this->arguments = $args;
@@ -81,10 +82,6 @@ class FuzzyFinder
         return $this;
     }
 
-    /**
-     * @param  array <mixed>  $options
-     * @return null|mixed|string|array <mixed>
-     */
     public function ask($options = []): mixed
     {
         static::prepareBinary();
