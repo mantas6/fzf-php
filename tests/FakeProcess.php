@@ -1,19 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests;
 
 final class FakeProcess
 {
     public static array $lastCommand;
     public static string $lastInput;
+    public static int $lastTimeout;
+
+    public static array $lastEnv;
 
     public function __construct(
-        private array $command,
-        private string $input,
-        private int $timeout,
+        array $command,
+        private readonly string $input,
+        int $timeout,
     ) {
         static::$lastCommand = $command;
         static::$lastInput = $input;
+
+        static::$lastTimeout = $timeout;
     }
 
     public static function getLastCommandString(): string
@@ -23,7 +30,7 @@ final class FakeProcess
 
     public function start(array $env): void
     {
-        //
+        static::$lastEnv = $env;
     }
 
     public function stop(): ?int
@@ -31,7 +38,7 @@ final class FakeProcess
         return 0;
     }
 
-    public function isRunning()
+    public function isRunning(): bool
     {
         return false;
     }
