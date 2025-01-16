@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Mantas6\FzfPhp;
 
 use Closure;
+use Exception;
+use Symfony\Component\Process\Process;
 
 /**
  * @internal
@@ -62,11 +64,13 @@ class Socket
 
     private function generateSocketPath(): string
     {
-        $path = getcwd() . '/sock';
+        exec('mktemp -u', $path, $exitCode);
 
-        if (file_exists($path)) {
-            unlink($path);
+        if ($exitCode !== 0) {
+            throw new Exception('Failed to reserve a socket tmp file');
         }
+
+        $path = array_shift($path) . '-fzf-php';
 
         return $path;
     }
