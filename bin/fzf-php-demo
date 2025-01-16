@@ -33,9 +33,8 @@ enum Priority: string
         return cell(
             $this->value,
             fg: match ($this->value) {
-                'Low' => 'gray',
-                'Medium' => 'default',
-                'High' => 'red',
+                'Low', 'Medium' => 'gray',
+                'High' => 'yellow',
             },
         );
     }
@@ -86,6 +85,29 @@ class Category
                     new Task(
                         title: 'Eggs',
                         description: 'Use it like 1 per week, but sometimes I need them.',
+                    ),
+                    new Task(
+                        title: 'Fish',
+                        description: 'Frozen.',
+                    ),
+                ],
+            ),
+            new Category(
+                title: 'Taxes',
+                icon: '',
+                color: 'red',
+                templates: [
+                    new Task(
+                        title: 'Electricity',
+                        description: '',
+                    ),
+                    new Task(
+                        title: 'Water',
+                        description: '',
+                    ),
+                    new Task(
+                        title: 'Gas',
+                        description: '',
                     ),
                 ],
             ),
@@ -140,6 +162,15 @@ $manager = new class {
     public function __construct()
     {
         $this->tasks = new TaskList;
+
+        $categories = Category::all();
+
+        foreach ($categories as $category) {
+            foreach ($category->templates as $task) {
+                $this->tasks->push($task);
+                $task->category = $category;
+            }
+        }
     }
 
     function run()
