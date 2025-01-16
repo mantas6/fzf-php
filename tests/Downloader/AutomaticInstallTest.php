@@ -8,7 +8,7 @@ beforeEach(function (): void {
     if (file_exists('./vendor/bin/fzf')) {
         unlink('./vendor/bin/fzf');
     }
-});
+})->skip(fn () => !empty($_ENV['SKIP_INSTALL_TESTS']));
 
 it('installs fzf binary when called', function (): void {
     fzf(['Apple'], ['filter' => 'Apple']);

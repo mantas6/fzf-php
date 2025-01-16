@@ -8,7 +8,8 @@ use function Mantas6\FzfPhp\fzf;
 
 $binPath = './vendor/bin/fzf';
 
-beforeEach(fn (): ?bool => file_exists($binPath) ? unlink($binPath) : null);
+beforeEach(fn (): ?bool => file_exists($binPath) ? unlink($binPath) : null)
+    ->skip(fn () => !empty($_ENV['SKIP_INSTALL_TESTS']));
 
 it('installs fzf binary', function () use ($binPath): void {
     Downloader::installLatestRelease();

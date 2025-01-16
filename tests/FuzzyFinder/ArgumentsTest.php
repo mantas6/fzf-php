@@ -7,10 +7,7 @@ use Tests\FakeProcess;
 
 use function Mantas6\FzfPhp\fzf;
 
-beforeEach(function () {
-    FuzzyFinder::usingCommand(['./bin/fzf-fake']);
-    FuzzyFinder::usingProcessClass(FakeProcess::class);
-});
+beforeEach(fn () => FuzzyFinder::usingProcessClass(FakeProcess::class));
 
 it('passes keyed arguments', function (): void {
     fzf(
