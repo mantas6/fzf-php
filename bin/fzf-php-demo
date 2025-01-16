@@ -151,12 +151,10 @@ $manager = new class {
             ],
             present: fn(string $action) => match ($action) {
                 'list' => [
-                    cell('', fg: 'blue'),
-                    'List',
+                    ' List',
                 ],
                 'create' => [
-                    cell('', fg: 'green'),
-                    'Create',
+                    ' Create',
                 ],
             },
         );
