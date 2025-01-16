@@ -17,20 +17,20 @@ final class FakeProcess
         private readonly string $input,
         int $timeout,
     ) {
-        static::$lastCommand = $command;
-        static::$lastInput = $input;
+        self::$lastCommand = $command;
+        self::$lastInput = $input;
 
-        static::$lastTimeout = $timeout;
+        self::$lastTimeout = $timeout;
     }
 
     public static function getLastCommandString(): string
     {
-        return implode(' ', static::$lastCommand);
+        return implode(' ', self::$lastCommand);
     }
 
     public function start(array $env): void
     {
-        static::$lastEnv = $env;
+        self::$lastEnv = $env;
     }
 
     public function stop(): ?int
