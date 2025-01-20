@@ -12,3 +12,12 @@ it('renders basic options correctly', function () {
 
     expect(FakeProcess::$lastInput)->toMatchSnapshot();
 });
+
+it('renders presented options correctly', function () {
+    fzf(
+        ['Apple', 'Orange', 'Grapefruit'],
+        present: fn (string $item) => [$item, strtoupper($item)],
+    );
+
+    expect(FakeProcess::$lastInput)->toMatchSnapshot();
+});
