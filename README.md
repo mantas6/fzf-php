@@ -320,4 +320,5 @@ The `fzf` binary is downloaded automatically on the first use, however you can i
 
 See also:
 - [`fzf` GitHub page](https://github.com/junegunn/fzf)
+- [`fzf` Documentation](https://junegunn.github.io/fzf)
 - [Symfony Docs: Table](https://symfony.com/doc/current/components/console/helpers/table.html)
