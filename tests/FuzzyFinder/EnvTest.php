@@ -3,21 +3,16 @@
 declare(strict_types=1);
 
 use Mantas6\FzfPhp\FuzzyFinder;
+use Tests\FakeProcess;
 
 use function Mantas6\FzfPhp\fzf;
 
-beforeEach(function (): void {
-    FuzzyFinder::usingCommand(['./bin/fzf-fake']);
-
-    // putenv('FZF_DEFAULT_COMMAND=testing');
-    // putenv('FZF_DEFAULT_OPTS=testing');
-    // putenv('FZF_DEFAULT_OPTS_FILE=testing');
-});
+beforeEach(fn () => FuzzyFinder::usingProcessClass(FakeProcess::class));
 
 it('doesnt retain system fzf env variables', function (): void {
-    $result = fzf([], ['fake-dump-env' => true, 'multi' => true]);
+    fzf(['Apples', 'Oranges']);
 
-    expect($result)->not->toContain('FZF_DEFAULT_COMMAND')
+    expect(FakeProcess::$lastEnv)->not->toContain('FZF_DEFAULT_COMMAND')
         ->not->toContain('FZF_DEFAULT_OPTS')
         ->not->toContain('FZF_DEFAULT_OPTS_FILE');
-})->note('need to find a way to fake the env variables');
+});
