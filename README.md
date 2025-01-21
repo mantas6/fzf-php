@@ -248,7 +248,7 @@ $selected = fzf(
 
 - Arguments `delimiter` (or `d`), `with-nth` are used internally, and will be overridden if specified
 - Arguments that transform output may not be supported
-- Consult [`fzf` Documentation](https://junegunn.github.io/fzf) for all available options
+- Consult [`fzf` Reference](https://junegunn.github.io/fzf/reference) for all available options
 
 ### Reusable object approach
 
