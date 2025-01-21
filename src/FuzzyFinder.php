@@ -7,8 +7,8 @@ namespace Mantas6\FzfPhp;
 use Closure;
 use Mantas6\FzfPhp\Concerns\PresentsForFinder;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
-use Mantas6\FzfPhp\Support\CompactTable;
 use Mantas6\FzfPhp\Support\Helpers;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -35,6 +35,8 @@ class FuzzyFinder
     protected ?Closure $presenter = null;
 
     protected ?Closure $preview = null;
+
+    protected ?array $headers = null;
 
     public static function usingCommand(array $cmd): void
     {
@@ -78,6 +80,13 @@ class FuzzyFinder
     public function preview(Closure $callback): self
     {
         $this->preview = $callback;
+
+        return $this;
+    }
+
+    public function headers(array $headers): self
+    {
+        $this->headers = $headers;
 
         return $this;
     }
@@ -183,9 +192,13 @@ class FuzzyFinder
         $options = $this->prepareOptionsForTable($options);
         $options = $this->convertOptionsToTable($options, $arguments);
 
+        $headersLinesCount = ($arguments['header-lines'] ?? false) ?: 0;
+
         $processed = [];
 
         foreach ($options as $key => $value) {
+            $key -= $headersLinesCount;
+
             $processed[] = $key . static::$delimiter . $value;
         }
 
@@ -225,7 +238,16 @@ class FuzzyFinder
             decorated: !empty($arguments['ansi']),
         );
 
-        (new CompactTable($output))->display($options);
+        $table = new Table($output);
+
+        $table->setStyle('compact')
+            ->setRows($options);
+
+        if ($this->headers !== null) {
+            $table->setHeaders($this->headers);
+        }
+
+        $table->render();
 
         return array_filter(
             explode(PHP_EOL, $output->fetch())
@@ -260,6 +282,10 @@ class FuzzyFinder
             'delimiter' => static::$delimiter,
             'with-nth' => '2..',
         ];
+
+        if ($this->headers !== null) {
+            $args['header-lines'] = '1';
+        }
 
         if ($this->preview instanceof Closure) {
             $basePath = Helpers::basePath();

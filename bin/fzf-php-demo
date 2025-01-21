@@ -203,6 +203,8 @@ $manager = new class {
     {
         $task = fzf(
             options: $this->tasks->list,
+            arguments: ['reverse' => true],
+            headers: ['Due', 'Title', 'Status', 'Flag', 'Priority', 'Category'],
             present: fn(Task $task) => [
                 $task->getDueAt(),
                 $task->title,

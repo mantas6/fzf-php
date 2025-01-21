@@ -250,6 +250,19 @@ $selected = fzf(
 - Arguments that transform output may not be supported
 - Consult [`fzf` Reference](https://junegunn.github.io/fzf/reference) for all available options
 
+### Headers
+
+Fixed header will be displayed if header list is passed.
+
+```php
+<?php
+
+$selected = fzf(
+    options: ['Apple', 'Orange', 'Grapefruit'],
+    headers: ['Fruit'],
+);
+```
+
 ### Reusable object approach
 
 If `options` are not provided, the object is returned.
