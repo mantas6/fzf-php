@@ -13,7 +13,7 @@ class Downloader
     protected static string $templateUrl = 'https://github.com/{repo}/releases/download/v{tag}/fzf-{tag}-{system}_{arch}.tar.gz';
 
     protected static string $repository = 'junegunn/fzf';
-    protected static string $tag = '0.57.0';
+    protected static string $tag = '0.58.0';
 
     public static function installLatestRelease(): void
     {
