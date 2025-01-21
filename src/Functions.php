@@ -9,13 +9,17 @@ use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 
 if (!function_exists('FzfPhp\fzf')) {
-    function fzf($options = null, array $arguments = [], ?Closure $present = null): mixed
+    function fzf($options = null, array $arguments = [], ?Closure $present = null, ?Closure $preview = null): mixed
     {
         $finder = (new FuzzyFinder)
             ->arguments($arguments);
 
         if ($present instanceof Closure) {
             $finder->present($present);
+        }
+
+        if ($preview instanceof Closure) {
+            $finder->preview($preview);
         }
 
         if ($options !== null) {

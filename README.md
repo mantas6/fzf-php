@@ -16,6 +16,7 @@ This package allows you to create [`fzf`](https://github.com/junegunn/fzf) power
 - Automatic `fzf` binary download
 - Inline `fzf` configuration
 - Option list styling
+- Selected option preview
 
 ## Installation
 
@@ -101,21 +102,21 @@ class Model implements PresentsForFinder
 }
 ```
 
-##### Providing a presenter
+### Options presentation
 
-To untie the presentation from the model, more reusable approach can be used.
+Callback can be provided for presentation. This will work for any options type.
 
 ```php
 <?php
 
 $selected = fzf(
     options: [
-        new Model('Apple'),
-        new Model('Orange'),
-        new Model('Grapefruits'),
+        'Apple',
+        'Orange',
+        'Grapefruits',
     ],
 
-    present: fn (Model $item): array => [$item->name],
+    present: fn (string $item): array => [strtoupper($item->name)],
 );
 
 // or
@@ -128,7 +129,7 @@ $selected = fzf(
 
 - The callable must always return an `array`
 
-#### Options as object
+### Options as object
 
 Instead of passing options as array, object can be used.
 
@@ -195,6 +196,23 @@ cell(
 
 More information can be found at [Symfony Docs: Table](https://symfony.com/doc/current/components/console/helpers/table.html)
 
+### Options preview
+
+Preview window can be enabled for each selected option.
+
+```php
+<?php
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+$selected = fzf(
+    options: ['Apple', 'Orange', 'Grapefruit'],
+
+    preview: fn (string $item, SymfonyStyle $io) => $io->writeLine(strtoupper($item)),
+);
+```
+
+`SymfonyStyle` provides basic elements for formatting.
+
 ### Multi mode
 
 Retrieve multiple options from a list.
@@ -230,7 +248,7 @@ $selected = fzf(
 
 - Arguments `delimiter` (or `d`), `with-nth` are used internally, and will be overridden if specified
 - Arguments that transform output may not be supported
-- Preview and reload are not currently supported
+- Consult [`fzf` Documentation](https://junegunn.github.io/fzf) for all available options
 
 ### Reusable object approach
 
@@ -302,4 +320,5 @@ The `fzf` binary is downloaded automatically on the first use, however you can i
 
 See also:
 - [`fzf` GitHub page](https://github.com/junegunn/fzf)
+- [`fzf` Documentation](https://junegunn.github.io/fzf)
 - [Symfony Docs: Table](https://symfony.com/doc/current/components/console/helpers/table.html)

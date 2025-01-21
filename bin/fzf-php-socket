@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+$address = $argv[1];
+$action = $argv[2];
+$selection = $argv[3];
+
+$socket = stream_socket_client(
+    $address,
+    $errorCode,
+    $errorMessage,
+    timeout: 30,
+);
+
+if (!$socket) {
+    fwrite(STDERR, 'Socket connection failed' . PHP_EOL);
+    exit(1);
+}
+
+fwrite($socket, $action . PHP_EOL);
+fwrite($socket, $selection . PHP_EOL);
+
+stream_socket_shutdown($socket, STREAM_SHUT_WR);
+
+while (!feof($socket)) {
+    echo fgets($socket, 1024);
+}
+
+fclose($socket);

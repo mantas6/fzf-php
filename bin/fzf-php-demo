@@ -1,0 +1,330 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Carbon\Carbon;
+use Mantas6\FzfPhp\Support\CompactTable;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+use function Mantas6\FzfPhp\cell;
+use function Mantas6\FzfPhp\fzf;
+
+foreach (
+    [
+        dirname(__DIR__, 4) . '/vendor/autoload.php',
+        dirname(__DIR__) . '/vendor/autoload.php',
+    ] as $autoloadPath
+) {
+    if (file_exists($autoloadPath)) {
+        include_once $autoloadPath;
+
+        break;
+    }
+}
+
+enum Priority: string
+{
+    case Low = 'Low';
+    case Medium = 'Medium';
+    case High = 'High';
+
+    public function format()
+    {
+        return cell(
+            $this->value,
+            fg: match ($this->value) {
+                'Low', 'Medium' => 'gray',
+                'High' => 'yellow',
+            },
+        );
+    }
+}
+
+class TaskList
+{
+    public array $list = [];
+
+    public function toArray(): array
+    {
+        return $this->list;
+    }
+
+    public function push(Task $task): self
+    {
+        $this->list[] = $task;
+
+        return $this;
+    }
+}
+
+class Category
+{
+    public function __construct(
+        public string $title,
+        public string $icon,
+        public string $color,
+        public array $templates = [],
+    ) {}
+
+    public static function all(): array
+    {
+        return [
+            new Category(
+                title: 'Groceries',
+                icon: '',
+                color: 'blue',
+                templates: [
+                    new Task(
+                        title: 'Milk',
+                        description: 'Do not use it that much, but it is still needed.',
+                    ),
+                    new Task(
+                        title: 'Meat',
+                        description: 'Only have it for a few days.',
+                    ),
+                    new Task(
+                        title: 'Eggs',
+                        description: 'Use it like 1 per week, but sometimes I need them.',
+                    ),
+                    new Task(
+                        title: 'Fish',
+                        description: 'Frozen.',
+                    ),
+                ],
+            ),
+            new Category(
+                title: 'Taxes',
+                icon: '',
+                color: 'red',
+                templates: [
+                    new Task(
+                        title: 'Electricity',
+                        description: '',
+                    ),
+                    new Task(
+                        title: 'Water',
+                        description: '',
+                    ),
+                    new Task(
+                        title: 'Gas',
+                        description: '',
+                    ),
+                ],
+            ),
+        ];
+    }
+}
+
+class Task
+{
+    public function __construct(
+        public string $title,
+        public ?Carbon $dueAt = null,
+        public string $description = '',
+        public bool $completed = false,
+        public bool $important = false,
+        public Priority $priority = Priority::Medium,
+        public ?Category $category = null,
+    ) {}
+
+    public function getStatus()
+    {
+        return $this->completed ? cell(' Completed', fg: 'green') : '';
+    }
+
+    public function getImportant()
+    {
+        return $this->important ? cell(' Important', fg: 'red') : '';
+    }
+
+    public function getDueAt()
+    {
+        return $this->dueAt?->format('d/m/y') ?: '';
+    }
+
+    public function getPreview(SymfonyStyle $io)
+    {
+        $table = new CompactTable($io);
+        $table->display([
+            ['Title', '   ', $this->title],
+            ['Due At', '   ', $this->getDueAt()],
+            ['Status', '   ', $this->getStatus()],
+            ['Flag', '   ', $this->getImportant()],
+            ['Priority', '   ', $this->priority->format()],
+        ]);
+
+        $io->block($this->description);
+    }
+}
+
+$manager = new class {
+    private $tasks;
+
+    public function __construct()
+    {
+        $this->tasks = new TaskList;
+
+        $categories = Category::all();
+
+        foreach ($categories as $category) {
+            foreach ($category->templates as $task) {
+                $this->tasks->push($task);
+                $task->category = $category;
+            }
+        }
+    }
+
+    function run()
+    {
+        $selection = fzf(
+            options: [
+                'list',
+                'create',
+            ],
+            present: fn(string $action) => match ($action) {
+                'list' => [
+                    ' List',
+                ],
+                'create' => [
+                    ' Create',
+                ],
+            },
+        );
+
+        match ($selection) {
+            'list' => $this->list(),
+            'create' => $this->create(),
+            null => exit,
+        };
+    }
+
+    function list()
+    {
+        $task = fzf(
+            options: $this->tasks->list,
+            present: fn(Task $task) => [
+                $task->getDueAt(),
+                $task->title,
+                $task->getStatus(),
+                $task->getImportant(),
+                $task->priority->format(),
+                cell(
+                    $task->category->icon . ' ' . $task->category->title,
+                    fg: $task->category->color,
+                ),
+            ],
+            preview: fn (Task $task, SymfonyStyle $io) => $task->getPreview($io),
+        );
+
+        if ($task === null) {
+            return;
+        }
+
+        $this->edit($task);
+    }
+
+    function create()
+    {
+        $categories = Category::all();
+
+        $category = fzf(
+            $categories,
+            present: fn(Category $category) => [
+                cell(
+                    $category->icon . ' ' . $category->title,
+                    fg: $category->color,
+                ),
+            ],
+        );
+
+        $task = fzf(
+            $category->templates,
+            present: fn(Task $task) => [
+                $task->title,
+            ],
+            preview: function (Task $task, SymfonyStyle $io) {
+                $io->title($task->title);
+                $io->block($task->description);
+            },
+        );
+
+        $task->category = $category;
+
+        $this->tasks->push($task);
+
+        $this->edit($task);
+    }
+
+    function edit(Task $task)
+    {
+        while (true) {
+            $action = fzf(
+                ['exit', 'complete', 'delete', 'set-priority', 'set-important', 'set-date'],
+
+                present: fn(string $option) => [
+                    match ($option) {
+                        'exit' => '󰈆 Exit',
+                        'complete' => $task->completed ? ' Mark as Not Completed' : cell(' Mark as Completed', fg: 'green'),
+                        'set-important' => $task->important ? ' Set as Not Important' : ' Set as Important',
+                        'delete' => cell(' Delete', fg: 'red'),
+                        'set-date' => '󰃭 Set Due Date',
+                        'set-priority' => '󰈍 Set Priority',
+                        default => $option,
+                    },
+                ],
+
+                preview: fn ($_, SymfonyStyle $io) => $task->getPreview($io),
+            );
+
+            if (in_array($action, ['exit', null])) {
+                $this->list();
+                return;
+            }
+
+            match ($action) {
+                'complete' => $task->completed = !$task->completed,
+                'set-date' => $task->dueAt = $this->pickDate(),
+                'set-important' => $task->important = !$task->important,
+                'set-priority' => $task->priority = $this->pickPriority(),
+            };
+        }
+    }
+
+    function pickPriority()
+    {
+        return fzf(
+            Priority::cases(),
+            present: fn (Priority $item) => [$item->value],
+        );
+    }
+
+    function pickDate()
+    {
+        $dates = array_map(
+            callback: fn(int $days) => Carbon::now()->addDays($days),
+            array: range(0, 60),
+        );
+
+        return fzf(
+            $dates,
+            present: fn(Carbon $date) => [
+                $date->format('d'),
+                $date->format('F'),
+                cell($date->format('l'), align: 'right'),
+                match (true) {
+                    $date->isToday() => 'Today',
+                    $date->isTomorrow() => 'Tomorrow',
+                    $date->isYesterday() => 'Yesterday',
+                    $date->isSameDay(Carbon::parse('next week')) => 'Next week',
+                    $date->isSameDay(Carbon::parse('next month')) => 'Next month',
+                    default => '',
+                },
+            ],
+        );
+    }
+};
+
+while (true) {
+    $manager->run();
+}

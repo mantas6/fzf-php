@@ -7,4 +7,5 @@ use Mantas6\FzfPhp\FuzzyFinder;
 pest()->beforeEach(function (): void {
     FuzzyFinder::usingDefaultCommand();
     FuzzyFinder::usingDefaultArguments([]);
+    FuzzyFinder::usingDefaultProcessClass();
 });

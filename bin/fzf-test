@@ -4,6 +4,9 @@
 declare(strict_types=1);
 
 use Mantas6\FzfPhp\Downloader;
+use Mantas6\FzfPhp\FuzzyFinder;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Tests\FakeProcess;
 
 use function Mantas6\FzfPhp\cell;
 use function Mantas6\FzfPhp\fzf;
@@ -21,29 +24,12 @@ foreach (
     }
 }
 
-class Model
-{
-    public function __construct(public string $name, public int $weight)
-    {
-    }
+FuzzyFinder::usingProcessClass(FakeProcess::class);
 
-    public function toArray()
-    {
-        return [$this->name, $this->weight];
-    }
-}
-
-$selection = fzf(
-    options: [
-        new Model('Apple', 250),
-        new Model('Orange', 500),
-        new Model('Grapefruit', 1000),
-    ],
-    arguments: ['height' => '~40%'],
-    present: fn ($model) => [
-        $model->name,
-        cell((string) $model->weight, fg: $model->weight >= 1000 ? 'red' : 'green')
-    ],
-);
+$selection = fzf([
+    'First',
+    'Second',
+    'Third',
+]);
 
 dd($selection);

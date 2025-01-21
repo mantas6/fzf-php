@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Mantas6\FzfPhp;
 
 use Closure;
-use Composer\Autoload\ClassLoader;
 use Mantas6\FzfPhp\Concerns\PresentsForFinder;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Support\CompactTable;
+use Mantas6\FzfPhp\Support\Helpers;
+use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
+use Throwable;
 use Traversable;
 
 class FuzzyFinder
@@ -27,11 +30,12 @@ class FuzzyFinder
 
     protected static ?array $command = null;
 
+    protected static $processClass = Process::class;
+
     protected ?Closure $presenter = null;
 
-    /**
-     * @param  array <string>  $cmd
-     */
+    protected ?Closure $preview = null;
+
     public static function usingCommand(array $cmd): void
     {
         static::$command = $cmd;
@@ -42,17 +46,21 @@ class FuzzyFinder
         static::$command = null;
     }
 
-    /**
-     * @param  array <string, mixed>  $args
-     */
     public static function usingDefaultArguments(array $args): void
     {
         static::$defaultArguments = $args;
     }
 
-    /**
-     * @param  array <string, mixed>  $args
-     */
+    public static function usingProcessClass($class): void
+    {
+        static::$processClass = $class;
+    }
+
+    public static function usingDefaultProcessClass(): void
+    {
+        static::$processClass = Process::class;
+    }
+
     public function arguments(array $args): self
     {
         $this->arguments = $args;
@@ -60,25 +68,38 @@ class FuzzyFinder
         return $this;
     }
 
-    public function present(Closure $presenter): self
+    public function present(Closure $callback): self
     {
-        $this->presenter = $presenter;
+        $this->presenter = $callback;
 
         return $this;
     }
 
-    /**
-     * @param  array <mixed>  $options
-     * @return null|mixed|string|array <mixed>
-     */
+    public function preview(Closure $callback): self
+    {
+        $this->preview = $callback;
+
+        return $this;
+    }
+
     public function ask($options = []): mixed
     {
         static::prepareBinary();
 
-        $arguments = $this->getAllArguments();
+        $socket = new Socket;
+        $socketPath = $socket->start();
+
+        $arguments = [
+            ...static::$defaultArguments,
+            ...$this->getInternalArguments(
+                $this->arguments,
+                $socketPath,
+            ),
+        ];
+
         $options = $this->normalizeOptionsType($options);
 
-        $process = new Process(
+        $process = new static::$processClass(
             command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
             input: implode(PHP_EOL, $this->prepareOptionsForCommand($options, $arguments)),
             timeout: 0,
@@ -90,7 +111,18 @@ class FuzzyFinder
             'FZF_DEFAULT_OPTS_FILE' => null,
         ]);
 
-        $process->wait();
+        while ($process->isRunning()) {
+            $socket->listen(function (string $input) use ($options, $process): string {
+                try {
+                    return $this->respondToSocket($input, $options);
+                } catch (Throwable $e) {
+                    $process->stop();
+                    throw $e;
+                }
+            });
+        }
+
+        $socket->stop();
 
         $exitCode = $process->getExitCode();
         $error = $process->getErrorOutput();
@@ -113,6 +145,23 @@ class FuzzyFinder
         }
 
         return $selected[0];
+    }
+
+    protected function respondToSocket(string $input, array $options): string
+    {
+        $input = explode(PHP_EOL, $input);
+        array_shift($input);
+        $selection = implode(PHP_EOL, $input);
+
+        $mapped = $this->mapFinderOutput([$selection], $options);
+
+        $buf = new BufferedOutput(decorated: true);
+
+        $io = new SymfonyStyle(new StringInput(''), $buf);
+
+        ($this->preview)($mapped[0], $io);
+
+        return $buf->fetch();
     }
 
     protected function normalizeOptionsType($options): array
@@ -200,9 +249,9 @@ class FuzzyFinder
         return $values;
     }
 
-    protected function getInternalArguments(array $arguments): array
+    protected function getInternalArguments(array $arguments, string $socketPath): array
     {
-        return [
+        $args = [
             'ansi' => true,
 
             ...$arguments,
@@ -211,6 +260,13 @@ class FuzzyFinder
             'delimiter' => static::$delimiter,
             'with-nth' => '2..',
         ];
+
+        if ($this->preview instanceof Closure) {
+            $basePath = Helpers::basePath();
+            $args['preview'] = "$basePath/bin/fzf-php-socket unix://$socketPath preview {}";
+        }
+
+        return $args;
     }
 
     protected function isMultiMode(): bool
@@ -238,16 +294,6 @@ class FuzzyFinder
         return $commandArguments;
     }
 
-    protected function getAllArguments(): array
-    {
-        return [
-            ...static::$defaultArguments,
-            ...$this->getInternalArguments(
-                $this->arguments,
-            ),
-        ];
-    }
-
     /**
      * @return array <string>
      */
@@ -257,9 +303,7 @@ class FuzzyFinder
             return static::$command;
         }
 
-        $basePath = dirname(
-            array_keys(ClassLoader::getRegisteredLoaders())[0]
-        );
+        $basePath = Helpers::basePath();
 
         return [$basePath . '/' . static::$defaultBinary];
     }

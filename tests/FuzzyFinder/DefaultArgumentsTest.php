@@ -3,26 +3,27 @@
 declare(strict_types=1);
 
 use Mantas6\FzfPhp\FuzzyFinder;
+use Tests\FakeProcess;
 
 use function Mantas6\FzfPhp\fzf;
 
-beforeEach(fn () => FuzzyFinder::usingCommand(['./bin/fzf-fake']));
+beforeEach(fn () => FuzzyFinder::usingProcessClass(FakeProcess::class));
 
 it('adds default arguments when set', function (): void {
     FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
 
-    $selection = fzf(['Apple', 'Orange', 'Grapefruit']);
+    fzf(['Apple', 'Orange', 'Grapefruit']);
 
-    expect($selection)->toContain(' --pointer ->');
-})->skip();
+    expect(FakeProcess::getLastCommandString())->toContain(' --pointer ->');
+});
 
 it('adds to override default arguments', function (): void {
     FuzzyFinder::usingDefaultArguments(['pointer' => '->']);
 
-    $selection = fzf(
+    fzf(
         options: ['Apple', 'Orange', 'Grapefruit'],
         arguments: ['pointer' => '>>'],
     );
 
-    expect($selection)->toContain(' --pointer >>');
-})->skip();
+    expect(FakeProcess::getLastCommandString())->toContain(' --pointer >>');
+});
