@@ -102,21 +102,21 @@ class Model implements PresentsForFinder
 }
 ```
 
-##### Providing a presenter
+### Options presentation
 
-To untie the presentation from the model, more reusable approach can be used.
+Callback can be provided for presentation. This will work for any options type.
 
 ```php
 <?php
 
 $selected = fzf(
     options: [
-        new Model('Apple'),
-        new Model('Orange'),
-        new Model('Grapefruits'),
+        'Apple',
+        'Orange',
+        'Grapefruits',
     ],
 
-    present: fn (Model $item): array => [$item->name],
+    present: fn (string $item): array => [strtoupper($item->name)],
 );
 
 // or
@@ -129,7 +129,7 @@ $selected = fzf(
 
 - The callable must always return an `array`
 
-#### Options as object
+### Options as object
 
 Instead of passing options as array, object can be used.
 
@@ -248,7 +248,7 @@ $selected = fzf(
 
 - Arguments `delimiter` (or `d`), `with-nth` are used internally, and will be overridden if specified
 - Arguments that transform output may not be supported
-- Preview and reload are not currently supported
+- Consult [`fzf` Documentation](https://junegunn.github.io/fzf) for all available options
 
 ### Reusable object approach
 
