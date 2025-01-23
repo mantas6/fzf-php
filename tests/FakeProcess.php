@@ -16,6 +16,8 @@ final class FakeProcess
 
     private static ?Closure $runningCallback = null;
 
+    private static $context;
+
     public function __construct(
         array $command,
         private readonly string $input,
@@ -37,9 +39,27 @@ final class FakeProcess
         self::$runningCallback = $callback;
     }
 
+    public static function setContext($context): void
+    {
+        self::$context = $context;
+    }
+
+    public static function getContext()
+    {
+        return self::$context;
+    }
+
     public static function reset(): void
     {
         self::$runningCallback = null;
+        self::$context = null;
+    }
+
+    public static function getCommandAfter(string $argument): mixed
+    {
+        $index = array_search($argument, self::$lastCommand);
+
+        return self::$lastCommand[$index + 1];
     }
 
     public function start(array $env): void

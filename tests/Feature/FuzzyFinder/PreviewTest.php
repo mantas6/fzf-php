@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Mantas6\FzfPhp\FuzzyFinder;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Process;
 use Tests\FakeProcess;
 
 use function Mantas6\FzfPhp\fzf;
@@ -10,14 +12,39 @@ use function Mantas6\FzfPhp\fzf;
 beforeEach(fn () => FuzzyFinder::usingProcessClass(FakeProcess::class));
 
 it('retrieves preview information', function (): void {
-    FakeProcess::fakeRunning(fn (): false =>
-        // get path of socket client
-        // open socket process
-        // dd(FakeProcess::$lastCommand);
-        false);
+    FakeProcess::fakeRunning(function (): bool {
+        if (FakeProcess::getContext() === null) {
+            $previewCmd = FakeProcess::getCommandAfter('--preview');
+            $options = explode(PHP_EOL, FakeProcess::$lastInput);
+
+            $previewCmd = str_replace('{}', $options[0], $previewCmd);
+
+            $process = new Process(
+                explode(' ', $previewCmd),
+            );
+
+            FakeProcess::setContext($process);
+
+            $process->start();
+        }
+
+        /** @var Process */
+        $process = FakeProcess::getContext();
+
+        if ($process->isRunning()) {
+            return true;
+        }
+
+        expect($process->getExitCode())
+            ->toBe(0)
+            ->and($process->getOutput())
+            ->toBe("APPLE\n");
+
+        return false;
+    });
 
     fzf(
         ['Apple', 'Orange', 'Grapefruit'],
-        preview: fn (string $item) => strtoupper($item),
+        preview: fn (string $item, SymfonyStyle $io) => $io->writeln(strtoupper($item)),
     );
 });
