@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use Closure;
+
 final class FakeProcess
 {
     public static array $lastCommand;
@@ -11,6 +13,8 @@ final class FakeProcess
     public static int $lastTimeout;
 
     public static array $lastEnv;
+
+    private static ?Closure $runningCallback = null;
 
     public function __construct(
         array $command,
@@ -28,6 +32,16 @@ final class FakeProcess
         return implode(' ', self::$lastCommand);
     }
 
+    public static function fakeRunning(Closure $callback): void
+    {
+        self::$runningCallback = $callback;
+    }
+
+    public static function reset(): void
+    {
+        self::$runningCallback = null;
+    }
+
     public function start(array $env): void
     {
         self::$lastEnv = $env;
@@ -40,6 +54,10 @@ final class FakeProcess
 
     public function isRunning(): bool
     {
+        if (self::$runningCallback instanceof Closure) {
+            return (self::$runningCallback)();
+        }
+
         return false;
     }
 
