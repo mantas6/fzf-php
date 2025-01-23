@@ -17,6 +17,8 @@ it('retrieves preview information', function (): void {
             $previewCmd = FakeProcess::getCommandAfter('--preview');
             $options = explode(PHP_EOL, FakeProcess::$lastInput);
 
+            expect($options)->toHaveCount(3);
+
             $previewCmd = str_replace('{}', $options[0], $previewCmd);
 
             $process = new Process(
