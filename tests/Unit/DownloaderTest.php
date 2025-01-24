@@ -9,10 +9,10 @@ use function Mantas6\FzfPhp\fzf;
 $binPath = './vendor/bin/fzf';
 
 beforeEach(function () use ($binPath): void {
-    if (file_exists($binPath) && empty($_ENV['SKIP_INSTALL_TESTS'])) {
+    if (file_exists($binPath) && empty(getenv()['SKIP_INSTALL_TESTS'])) {
         unlink($binPath);
     }
-})->skip(fn (): bool => !empty($_ENV['SKIP_INSTALL_TESTS']), 'no local installs');
+})->skip(fn (): bool => isset(getenv()['SKIP_INSTALL_TESTS']) && (getenv()['SKIP_INSTALL_TESTS'] !== '' && getenv()['SKIP_INSTALL_TESTS'] !== '0'), 'no local installs');
 
 it('installs fzf binary', function () use ($binPath): void {
     Downloader::installLatestRelease();

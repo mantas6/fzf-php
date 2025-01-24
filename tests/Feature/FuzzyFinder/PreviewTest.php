@@ -49,4 +49,6 @@ it('retrieves preview information', function (): void {
         ['Apple', 'Orange', 'Grapefruit'],
         preview: fn (string $item, SymfonyStyle $io) => $io->writeln(strtoupper($item)),
     );
+
+    expect(static::getCount())->toBe(3);
 });
