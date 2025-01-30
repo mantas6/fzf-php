@@ -15,7 +15,7 @@ beforeEach(function () use ($binPath): void {
 })->skip(fn (): bool => isset(getenv()['SKIP_INSTALL_TESTS']) && (getenv()['SKIP_INSTALL_TESTS'] !== '' && getenv()['SKIP_INSTALL_TESTS'] !== '0'), 'no local installs');
 
 it('installs fzf binary', function () use ($binPath): void {
-    Installer::installLatestRelease();
+    Installer::handle();
 
     expect($binPath)->toBeFile();
     expect(filesize($binPath))->not->toBe(0);
