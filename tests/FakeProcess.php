@@ -103,6 +103,6 @@ final class FakeProcess
     {
         $options = explode(PHP_EOL, $this->input);
 
-        return $options[static::$selection];
+        return $options[self::$selection];
     }
 }
