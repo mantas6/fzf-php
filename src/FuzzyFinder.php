@@ -8,10 +8,9 @@ use Closure;
 use Mantas6\FzfPhp\Concerns\PresentsForFinder;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Support\Helpers;
+use Mantas6\FzfPhp\Support\PreviewStyleHelper;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use Throwable;
 use Traversable;
@@ -164,13 +163,13 @@ class FuzzyFinder
 
         $mapped = $this->mapFinderOutput([$selection], $options);
 
-        $buf = new BufferedOutput(decorated: true);
+        $output = ($this->preview)($mapped[0]);
 
-        $io = new SymfonyStyle(new StringInput(''), $buf);
-
-        ($this->preview)($mapped[0], $io);
-
-        return $buf->fetch();
+        return match (true) {
+            is_string($output) => $output,
+            $output instanceof PreviewStyleHelper => $output->render(),
+            default => (string) $output,
+        };
     }
 
     protected function normalizeOptionsType($options): array

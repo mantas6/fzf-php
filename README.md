@@ -202,16 +202,34 @@ Preview window can be enabled for each selected option.
 
 ```php
 <?php
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 $selected = fzf(
     options: ['Apple', 'Orange', 'Grapefruit'],
 
-    preview: fn (string $item, SymfonyStyle $io) => $io->writeLine(strtoupper($item)),
+    preview: fn (string $item) => strtoupper($item),
 );
 ```
 
-`SymfonyStyle` provides basic elements for formatting.
+If more advanced styling is needed, `style()` helper can be used.
+
+```php
+<?php
+use function Mantas6\FzfPhp\style;
+
+$selected = fzf(
+    // ...
+preview: function (string $item) {
+    return style()
+        ->table([
+            ['Original', $item],
+            ['Uppercase', strtoupper($item)],
+        ]);
+    }
+);
+```
+
+- Use `->table()` for creating compact tables
+- Use `->block()` for creating text blocks
 
 ### Multi mode
 

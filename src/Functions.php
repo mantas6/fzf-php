@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mantas6\FzfPhp;
 
 use Closure;
+use Mantas6\FzfPhp\Support\PreviewStyleHelper;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 
@@ -51,5 +52,12 @@ if (!function_exists('FzfPhp\cell')) {
                 'bg' => $bg,
             ]),
         ]);
+    }
+}
+
+if (!function_exists('FzfPhp\style')) {
+    function style(): PreviewStyleHelper
+    {
+        return new PreviewStyleHelper;
     }
 }

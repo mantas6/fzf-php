@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Mantas6\FzfPhp\FuzzyFinder;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use Tests\FakeProcess;
 
@@ -40,14 +39,14 @@ it('retrieves preview information', function (): void {
         expect($process->getExitCode())
             ->toBe(0)
             ->and($process->getOutput())
-            ->toBe("APPLE\n");
+            ->toBe('APPLE');
 
         return false;
     });
 
     fzf(
         ['Apple', 'Orange', 'Grapefruit'],
-        preview: fn (string $item, SymfonyStyle $io) => $io->writeln(strtoupper($item)),
+        preview: fn (string $item) => strtoupper($item),
     );
 
     expect(static::getCount())->toBe(3);

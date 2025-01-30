@@ -5,10 +5,10 @@ declare(strict_types=1);
 
 use Carbon\Carbon;
 use Mantas6\FzfPhp\Support\CompactTable;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 use function Mantas6\FzfPhp\cell;
 use function Mantas6\FzfPhp\fzf;
+use function Mantas6\FzfPhp\style;
 
 foreach (
     [
@@ -143,18 +143,17 @@ class Task
         return $this->dueAt?->format('d/m/y') ?: '';
     }
 
-    public function getPreview(SymfonyStyle $io)
+    public function getPreview()
     {
-        $table = new CompactTable($io);
-        $table->display([
-            ['Title', '   ', $this->title],
-            ['Due At', '   ', $this->getDueAt()],
-            ['Status', '   ', $this->getStatus()],
-            ['Flag', '   ', $this->getImportant()],
-            ['Priority', '   ', $this->priority->format()],
-        ]);
-
-        $io->block($this->description);
+        return style()
+            ->table(rows: [
+                ['Title', '   ', $this->title],
+                ['Due At', '   ', $this->getDueAt()],
+                ['Status', '   ', $this->getStatus()],
+                ['Flag', '   ', $this->getImportant()],
+                ['Priority', '   ', $this->priority->format()],
+            ])
+            ->block($this->description);
     }
 }
 
@@ -216,7 +215,7 @@ $manager = new class {
                     fg: $task->category->color,
                 ),
             ],
-            preview: fn (Task $task, SymfonyStyle $io) => $task->getPreview($io),
+            preview: fn (Task $task) => $task->getPreview(),
         );
 
         if ($task === null) {
@@ -245,10 +244,10 @@ $manager = new class {
             present: fn(Task $task) => [
                 $task->title,
             ],
-            preview: function (Task $task, SymfonyStyle $io) {
-                $io->title($task->title);
-                $io->block($task->description);
-            },
+            preview: fn (Task $task) =>
+                style()
+                    ->block($task->title)
+                    ->block($task->description),
         );
 
         $task->category = $category;
@@ -276,7 +275,7 @@ $manager = new class {
                     },
                 ],
 
-                preview: fn ($_, SymfonyStyle $io) => $task->getPreview($io),
+                preview: fn ($_) => $task->getPreview(),
             );
 
             if (in_array($action, ['exit', null])) {
