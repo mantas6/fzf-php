@@ -266,7 +266,6 @@ $selected = fzf(
     options: ['Apple', 'Orange', 'Grapefruit'],
     arguments: [
         'height' => '40%',
-        'ansi' => true,
         'cycle' => true,
     ],
 );
