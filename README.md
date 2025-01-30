@@ -370,3 +370,4 @@ See also:
 - [`fzf` GitHub page](https://github.com/junegunn/fzf)
 - [`fzf` Documentation](https://junegunn.github.io/fzf)
 - [Symfony Docs: Table](https://symfony.com/doc/current/components/console/helpers/table.html)
+- [Symfony Docs: How to Style a Console Command](https://symfony.com/doc/current/console/style.html)
