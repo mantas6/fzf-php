@@ -8,14 +8,14 @@ use Exception;
 use Mantas6\FzfPhp\Support\Helpers;
 use PharData;
 
-class Downloader
+class Installer
 {
     protected static string $templateUrl = 'https://github.com/{repo}/releases/download/v{tag}/fzf-{tag}-{system}_{arch}.tar.gz';
 
     protected static string $repository = 'junegunn/fzf';
     protected static string $tag = '0.58.0';
 
-    public static function installLatestRelease(): void
+    public static function handle(): void
     {
         $downloadUrl = static::createDownloadUrl(
             system: strtolower(php_uname('s')),

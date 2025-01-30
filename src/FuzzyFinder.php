@@ -336,7 +336,7 @@ class FuzzyFinder
     protected static function prepareBinary(): void
     {
         if (static::$command === null && !file_exists(static::resolveCommand()[0])) {
-            Downloader::installLatestRelease();
+            Installer::handle();
         }
     }
 }
