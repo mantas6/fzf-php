@@ -44,7 +44,7 @@ $selected = fzf(['Apple', 'Orange', 'Grapefruit']);
 
 // 'Apple'
 ```
-- Returns `null` if user cancels (^C) the prompt
+- Returns `null` if user cancels the prompt
 
 #### Arrays
 
@@ -253,7 +253,7 @@ $selected = fzf(
 
 // ['Apple', 'Orange']
 ```
-- Returns `[]` if user cancels (^C) the prompt
+- Returns `[]` if user cancels the prompt
 
 ### Arguments
 
