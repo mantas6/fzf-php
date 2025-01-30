@@ -8,4 +8,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v0.3.0] - 2025-01-30
 - Preview functionality
+- bump fzf version to v0.58.0
 - Other improvements
