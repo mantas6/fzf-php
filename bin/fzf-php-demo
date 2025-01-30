@@ -146,11 +146,11 @@ class Task
     {
         return style()
             ->table(rows: [
-                ['Title', '   ', $this->title],
-                ['Due At', '   ', $this->getDueAt()],
-                ['Status', '   ', $this->getStatus()],
-                ['Flag', '   ', $this->getImportant()],
-                ['Priority', '   ', $this->priority->format()],
+                [cell('Title', fg: 'gray', align: 'right'), '   ', $this->title],
+                [cell('Due At', fg: 'gray', align: 'right'), '   ', $this->getDueAt()],
+                [cell('Status', fg: 'gray', align: 'right'), '   ', $this->getStatus()],
+                [cell('Flag', fg: 'gray', align: 'right'), '   ', $this->getImportant()],
+                [cell('Priority', fg: 'gray', align: 'right'), '   ', $this->priority->format()],
             ])
             ->block($this->description);
     }
@@ -169,11 +169,18 @@ $manager = new class {
             foreach ($category->templates as $task) {
                 $this->tasks->push($task);
                 $task->category = $category;
-                $task->important = rand(1, 10) > 8;
+
+                $task->important = rand(1, 10) > 7;
 
                 $priorities = Priority::cases();
                 shuffle($priorities);
                 $task->priority = Priority::from($priorities[0]->name);
+
+                $task->completed = rand(1, 10) > 7;
+
+                if (rand(1, 10) > 7) {
+                    $task->dueAt = Carbon::now()->addDays(rand(1, 30));
+                }
             }
         }
     }
@@ -209,8 +216,12 @@ $manager = new class {
             arguments: [
                 'reverse' => true,
                 'preview-window' => '40%',
+                'height' => '~100%',
             ],
-            headers: ['Due', 'Title', 'Status', 'Flag', 'Priority', 'Category'],
+            headers: array_map(
+                fn (string $header) => cell($header, fg: 'gray'),
+                ['Due', 'Title', 'Status', 'Flag', 'Priority', 'Category']
+            ),
             present: fn(Task $task) => [
                 $task->getDueAt(),
                 $task->title,

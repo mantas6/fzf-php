@@ -11,6 +11,8 @@
 ------
 This package allows you to create [`fzf`](https://github.com/junegunn/fzf) powered menus straight from your PHP code.
 
+<img src="https://raw.githubusercontent.com/mantas6/fzf-php/main/docs/main.png" alt="Demo">
+
 ## Features
 
 - Automatic `fzf` binary download
