@@ -116,7 +116,7 @@ $selected = fzf(
         'Grapefruits',
     ],
 
-    present: fn (string $item): string => strtoupper($item->name),
+    present: fn (string $item): string => strtoupper($item),
 );
 ```
 
