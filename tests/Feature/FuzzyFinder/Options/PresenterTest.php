@@ -2,8 +2,13 @@
 
 declare(strict_types=1);
 
+use Mantas6\FzfPhp\FuzzyFinder;
+use Tests\FakeProcess;
+
 use function Mantas6\FzfPhp\cell;
 use function Mantas6\FzfPhp\fzf;
+
+beforeEach(fn () => FuzzyFinder::usingProcessClass(FakeProcess::class));
 
 class Presented
 {
@@ -20,10 +25,10 @@ it('works with objects when presentor is provided', function (): void {
             new Presented('Grapefruit'),
         ],
 
-        arguments: ['filter' => 'Apple'],
-
         present: fn (Presented $item): array => [$item->name],
     );
+
+    expect(FakeProcess::$lastInput)->toMatchSnapshot();
 
     expect($selection)->toBe($apple);
 });
@@ -34,15 +39,17 @@ it('works when non array value is returned fron presntor', function (): void {
             'Apple', 'Orange', 'Grapefruit',
         ],
 
-        arguments: ['filter' => 'Apple'],
-
         present: fn (string $item): string => $item,
     );
+
+    expect(FakeProcess::$lastInput)->toMatchSnapshot();
 
     expect($selection)->toBe('Apple');
 });
 
 it('works with cell helper', function (): void {
+    FakeProcess::setSelection(1);
+
     $selection = fzf(
         options: [
             ['name' => 'Apples', 'weight' => 1000],
@@ -59,5 +66,7 @@ it('works with cell helper', function (): void {
         ],
     );
 
+    expect(FakeProcess::$lastInput)->toMatchSnapshot();
+
     expect($selection)->toBe(['name' => 'Oranges', 'weight' => 2000]);
-})->note('assert the rendering');
+});

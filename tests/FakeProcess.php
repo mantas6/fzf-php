@@ -18,6 +18,8 @@ final class FakeProcess
 
     private static $context;
 
+    private static int $selection = 0;
+
     public function __construct(
         array $command,
         private readonly string $input,
@@ -49,10 +51,16 @@ final class FakeProcess
         return self::$context;
     }
 
+    public static function setSelection(int $selection): void
+    {
+        self::$selection = $selection;
+    }
+
     public static function reset(): void
     {
         self::$runningCallback = null;
         self::$context = null;
+        self::$selection = 0;
     }
 
     public static function getCommandAfter(string $argument): mixed
@@ -95,6 +103,6 @@ final class FakeProcess
     {
         $options = explode(PHP_EOL, $this->input);
 
-        return $options[0];
+        return $options[static::$selection];
     }
 }
