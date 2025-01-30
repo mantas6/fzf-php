@@ -3,7 +3,7 @@
 
 declare(strict_types=1);
 
-use Mantas6\FzfPhp\Downloader;
+use Mantas6\FzfPhp\Installer;
 
 foreach ([
     dirname(__DIR__, 4).'/vendor/autoload.php',
@@ -16,4 +16,4 @@ foreach ([
     }
 }
 
-Downloader::installLatestRelease();
+Installer::handle();
