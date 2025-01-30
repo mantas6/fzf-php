@@ -28,6 +28,20 @@ it('works with objects when presentor is provided', function (): void {
     expect($selection)->toBe($apple);
 });
 
+it('works when non array value is returned fron presntor', function (): void {
+    $selection = fzf(
+        options: [
+            'Apple', 'Orange', 'Grapefruit',
+        ],
+
+        arguments: ['filter' => 'Apple'],
+
+        present: fn (string $item): string => $item,
+    );
+
+    expect($selection)->toBe('Apple');
+});
+
 it('works with cell helper', function (): void {
     $selection = fzf(
         options: [

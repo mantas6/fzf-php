@@ -6,5 +6,5 @@ namespace Mantas6\FzfPhp\Concerns;
 
 interface PresentsForFinder
 {
-    public function presentForFinder(): array;
+    public function presentForFinder(): array|string;
 }

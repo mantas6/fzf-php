@@ -219,11 +219,11 @@ class FuzzyFinder
     {
         return match (true) {
             // Presenter
-            $this->presenter instanceof Closure => ($this->presenter)($value),
+            $this->presenter instanceof Closure => Helpers::alwaysArray(($this->presenter)($value)),
             // Strings
             is_string($value) => [$value],
             // Interface
-            $value instanceof PresentsForFinder => $value->presentForFinder(),
+            $value instanceof PresentsForFinder => Helpers::alwaysArray($value->presentForFinder()),
             // toArray()
             is_object($value) && method_exists($value, 'toArray') => $value->toArray(),
             // ...

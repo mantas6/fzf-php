@@ -116,18 +116,24 @@ $selected = fzf(
         'Grapefruits',
     ],
 
-    present: fn (string $item): array => [strtoupper($item->name)],
-);
-
-// or
-
-$selected = fzf(
-    // ...
-    present: new ModelPresenterInvokable,
+    present: fn (string $item): string => strtoupper($item->name),
 );
 ```
 
-- The callable must always return an `array`
+Multiple columns can be present by returning an array.
+
+```php
+<?php
+
+$selected = fzf(
+    // ...
+
+    present: fn (string $item): array => [
+        $item,
+        strtoupper($item),
+    ],
+);
+```
 
 ### Options as object
 

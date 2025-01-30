@@ -17,4 +17,12 @@ final readonly class Helpers
             array_keys(ClassLoader::getRegisteredLoaders())[0]
         );
     }
+
+    public static function alwaysArray(mixed $value): array
+    {
+        return match (is_array($value)) {
+            true => $value,
+            false => [$value],
+        };
+    }
 }
