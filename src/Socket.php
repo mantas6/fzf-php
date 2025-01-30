@@ -6,6 +6,7 @@ namespace Mantas6\FzfPhp;
 
 use Closure;
 use Exception;
+use Symfony\Component\Process\Process;
 
 /**
  * @internal
@@ -28,8 +29,14 @@ class Socket
     {
         stream_socket_shutdown($this->socket, STREAM_SHUT_RDWR);
 
+        $dir = dirname($this->path);
+
         if (file_exists($this->path)) {
             unlink($this->path);
+        }
+
+        if (file_exists($dir)) {
+            rmdir($dir);
         }
     }
 
@@ -63,12 +70,13 @@ class Socket
 
     private function generateSocketPath(): string
     {
-        exec('mktemp -u', $path, $exitCode);
+        $process = new Process(['mktemp', '-dt', 'fzf-php']);
+        $process->run();
 
-        if ($exitCode !== 0) {
+        if (!$process->isSuccessful()) {
             throw new Exception('Failed to reserve a socket tmp file');
         }
 
-        return array_shift($path) . '-fzf-php';
+        return trim($process->getOutput()) . '/sock';
     }
 }

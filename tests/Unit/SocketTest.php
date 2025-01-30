@@ -8,7 +8,9 @@ it('creates and unlinks socket file', function (): void {
     $socket = new Socket;
     $path = $socket->start();
     expect($path)->toBeFile();
+    expect(dirname($path))->toBeDirectory();
 
     $socket->stop();
     expect($path)->not->toBeFile();
+    expect(dirname($path))->not->toBeDirectory();
 });
