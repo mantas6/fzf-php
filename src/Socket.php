@@ -70,7 +70,7 @@ class Socket
 
     private function generateSocketPath(): string
     {
-        $process = new Process(['mktemp', '-dt', 'fzf-php']);
+        $process = new Process(['mktemp', '-d']);
         $process->run();
 
         if (!$process->isSuccessful()) {
