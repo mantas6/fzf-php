@@ -349,6 +349,23 @@ The `fzf` binary is downloaded automatically on the first use, however you can i
 ./vendor/bin/fzf-php-install
 ```
 
+#### Automatic update
+
+To optimize the initial start, especially when CI/CD is used, it is recommended to add this to your `composer.json` file.
+
+```json
+{
+    "scripts": {
+        "post-update-cmd": [
+            "./vendor/bin/fzf-php-install"
+        ],
+        "post-install-cmd": [
+            "./vendor/bin/fzf-php-install"
+        ]
+    }
+}
+```
+
 See also:
 - [`fzf` GitHub page](https://github.com/junegunn/fzf)
 - [`fzf` Documentation](https://junegunn.github.io/fzf)
