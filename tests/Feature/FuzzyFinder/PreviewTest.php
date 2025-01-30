@@ -33,7 +33,7 @@ it('retrieves preview information using style helper', function (): void {
     FakeProcessHelper::preview(function (Process $process): void {
         expect($process->getExitCode())
             ->toBe(0)
-            ->and($process->getOutput())
+            ->and(trim($process->getOutput()))
             ->toMatchSnapshot();
     });
 
