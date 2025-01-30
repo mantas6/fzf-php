@@ -19,6 +19,7 @@ This package allows you to create [`fzf`](https://github.com/junegunn/fzf) power
 - Inline `fzf` configuration
 - Option list styling
 - Selected option preview
+- Laravel support
 
 ## Installation
 
