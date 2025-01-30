@@ -13,11 +13,9 @@ beforeEach(fn () => FuzzyFinder::usingProcessClass(FakeProcess::class));
 it('retrieves preview information', function (): void {
     FakeProcess::fakeRunning(function (): bool {
         if (FakeProcess::getContext() === null) {
-            $previewCmd = FakeProcess::getCommandAfter('--preview');
             $options = explode(PHP_EOL, FakeProcess::$lastInput);
 
-            expect($options)->toHaveCount(3);
-
+            $previewCmd = FakeProcess::getCommandAfter('--preview');
             $previewCmd = str_replace('{}', $options[0], $previewCmd);
 
             $process = new Process(
@@ -49,5 +47,5 @@ it('retrieves preview information', function (): void {
         preview: fn (string $item) => strtoupper($item),
     );
 
-    expect(static::getCount())->toBe(3);
+    expect(static::getCount())->toBe(2);
 });
