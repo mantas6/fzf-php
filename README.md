@@ -265,28 +265,20 @@ $selected = fzf(
 
 ### Reusable object approach
 
-If `options` are not provided, the object is returned.
+Class instance can be created directly for more reusable approach.
 
 ```php
 <?php
 
-$finder = fzf();
+use Mantas6\FzfPhp\FuzzyFinder;
+
+$finder = new FuzzyFinder;
 
 $fruit = $finder->ask(['Apple', 'Orange', 'Grapefruit']);
 
 // ...
 
 $weight = $finder->ask(['250g', '500g', '1kg']);
-```
-
-Configuration can be passed to pre-configure the instance.
-
-```php
-<?php
-
-$finder = fzf(arguments: ['height' => '50%']);
-
-$finder->ask(['apple', 'orange', 'grapefruit']);
 ```
 
 Additional configuration is available through the class methods.

@@ -31,11 +31,7 @@ if (!function_exists('FzfPhp\fzf')) {
             $finder->preview($preview);
         }
 
-        if ($options !== null) {
-            return $finder->ask($options);
-        }
-
-        return $finder;
+        return $finder->ask($options);
     }
 }
 
