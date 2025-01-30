@@ -95,9 +95,9 @@ class Model implements PresentsForFinder
 {
     protected string $name;
 
-    public function presentForFinder(): array
+    public function presentForFinder(): string
     {
-        return [$this->name];
+        return $this->name;
     }
 }
 ```
