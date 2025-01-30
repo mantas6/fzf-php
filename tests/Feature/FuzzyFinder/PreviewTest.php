@@ -3,48 +3,48 @@
 declare(strict_types=1);
 
 use Mantas6\FzfPhp\FuzzyFinder;
+use Mantas6\FzfPhp\Support\PreviewStyleHelper;
 use Symfony\Component\Process\Process;
 use Tests\FakeProcess;
+use Tests\FakeProcessHelper;
 
 use function Mantas6\FzfPhp\fzf;
+use function Mantas6\FzfPhp\style;
 
 beforeEach(fn () => FuzzyFinder::usingProcessClass(FakeProcess::class));
 
 it('retrieves preview information', function (): void {
-    FakeProcess::fakeRunning(function (): bool {
-        if (FakeProcess::getContext() === null) {
-            $options = explode(PHP_EOL, FakeProcess::$lastInput);
-
-            $previewCmd = FakeProcess::getCommandAfter('--preview');
-            $previewCmd = str_replace('{}', $options[0], $previewCmd);
-
-            $process = new Process(
-                explode(' ', $previewCmd),
-            );
-
-            FakeProcess::setContext($process);
-
-            $process->start();
-        }
-
-        /** @var Process */
-        $process = FakeProcess::getContext();
-
-        if ($process->isRunning()) {
-            return true;
-        }
-
+    FakeProcessHelper::preview(function (Process $process): void {
         expect($process->getExitCode())
             ->toBe(0)
             ->and($process->getOutput())
             ->toBe('APPLE');
-
-        return false;
     });
 
     fzf(
         ['Apple', 'Orange', 'Grapefruit'],
         preview: fn (string $item) => strtoupper($item),
+    );
+
+    expect(static::getCount())->toBe(2);
+});
+
+it('retrieves preview information using style helper', function (): void {
+    FakeProcessHelper::preview(function (Process $process): void {
+        expect($process->getExitCode())
+            ->toBe(0)
+            ->and($process->getOutput())
+            ->toMatchSnapshot();
+    });
+
+    fzf(
+        ['Apple', 'Orange', 'Grapefruit'],
+        preview: fn (string $item): PreviewStyleHelper => style()
+            ->table([
+                'Original' => $item,
+                'Uppercase' => strtoupper($item),
+            ])
+            ->block($item)
     );
 
     expect(static::getCount())->toBe(2);
