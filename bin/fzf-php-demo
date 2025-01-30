@@ -4,7 +4,6 @@
 declare(strict_types=1);
 
 use Carbon\Carbon;
-use Mantas6\FzfPhp\Support\CompactTable;
 
 use function Mantas6\FzfPhp\cell;
 use function Mantas6\FzfPhp\fzf;
@@ -170,6 +169,11 @@ $manager = new class {
             foreach ($category->templates as $task) {
                 $this->tasks->push($task);
                 $task->category = $category;
+                $task->important = rand(1, 10) > 8;
+
+                $priorities = Priority::cases();
+                shuffle($priorities);
+                $task->priority = Priority::from($priorities[0]->name);
             }
         }
     }
@@ -202,7 +206,10 @@ $manager = new class {
     {
         $task = fzf(
             options: $this->tasks->list,
-            arguments: ['reverse' => true],
+            arguments: [
+                'reverse' => true,
+                'preview-window' => '40%',
+            ],
             headers: ['Due', 'Title', 'Status', 'Flag', 'Priority', 'Category'],
             present: fn(Task $task) => [
                 $task->getDueAt(),
