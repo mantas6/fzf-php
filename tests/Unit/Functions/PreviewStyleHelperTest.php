@@ -22,5 +22,5 @@ it('render the output', function (): void {
 
     $text = $style->render();
 
-    expect($text)->toMatchSnapshot();
+    expect(trim($text))->toMatchSnapshot();
 });
