@@ -67,43 +67,25 @@ $selected = fzf(
 
 #### Objects
 
-##### Using `toArray`
-
 ```php
 <?php
 
 $selected = fzf(
     options: [
-        new Model('Apple'),
+        new Model('Apple'), // must implement toArray or PresentsForFinder interface
         new Model('Orange'),
-        new Model('Grapefruits'),
+        new Model('Grapefruit'),
     ]
 );
 
 // new Model('Apple')
 ```
 
-- The object class must implement `toArray`
+To use objects as options, at least one is required:
 
-##### Implementing `PresentsForFinder` interface
-
-If using `toArray` method is not feasible, an interface can be implemented instead.
-
-```php
-<?php
-
-use Mantas6\FzfPhp\Concerns\PresentsForFinder;
-
-class Model implements PresentsForFinder
-{
-    protected string $name;
-
-    public function presentForFinder(): string
-    {
-        return $this->name;
-    }
-}
-```
+- Implement `toArray`
+- Implement `PresentsForFinder` interface
+- Provide presenter callback
 
 ### Options presentation
 
@@ -138,24 +120,27 @@ $selected = fzf(
 );
 ```
 
-### Options as object
+#### Implementing `PresentsForFinder` interface
 
-Instead of passing options as array, object can be used.
+If using `toArray` method is not feasible, an interface can be implemented instead.
 
 ```php
 <?php
 
-$selected = fzf(
-    options: new MyCustomCollection,
-);
+use Mantas6\FzfPhp\Concerns\PresentsForFinder;
+
+class Model implements PresentsForFinder
+{
+    protected string $name;
+
+    public function presentForFinder(): string
+    {
+        return $this->name;
+    }
+}
 ```
 
-The class needs to meet one of the following requirements:
-
-- Must implement the native `Traversable` interface
-- Needs to implement `toArray()` method
-
-### Options styling
+#### Styling
 
 Option columns can be styling using `cell()` helper function in the presenter callback.
 
@@ -207,7 +192,7 @@ cell(
 
 More information can be found at [Symfony Docs: Table](https://symfony.com/doc/current/components/console/helpers/table.html)
 
-### Options preview
+### Preview
 
 Preview window can be enabled for each selected option.
 
@@ -262,6 +247,23 @@ $selected = fzf(
 ```
 
 Full set of variables are available at [`fzf` Reference - Environment variables exported to child processes](https://junegunn.github.io/fzf/reference/#environment-variables-exported-to-child-processes)
+
+### Options as object
+
+Instead of passing options as array, object can be used.
+
+```php
+<?php
+
+$selected = fzf(
+    options: new MyCustomCollection,
+);
+```
+
+The class needs to meet one of the following requirements:
+
+- Must implement the native `Traversable` interface
+- Needs to implement `toArray()` method
 
 ### Multi mode
 
