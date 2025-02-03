@@ -203,6 +203,8 @@ cell(
 );
 ```
 
+- Available colors: `red, green, yellow, blue, magenta, cyan, white, default, gray, bright-red, bright-green, bright-yellow, bright-blue, bright-magenta, bright-cyan, bright-white`
+
 More information can be found at [Symfony Docs: Table](https://symfony.com/doc/current/components/console/helpers/table.html)
 
 ### Options preview
