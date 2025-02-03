@@ -19,8 +19,19 @@ if (!$socket) {
     exit(1);
 }
 
-fwrite($socket, $action . PHP_EOL);
-fwrite($socket, $selection . PHP_EOL);
+$env = array_filter(
+    getenv(),
+    fn ($name) => str_starts_with($name, 'FZF_'),
+    ARRAY_FILTER_USE_KEY,
+);
+
+$payload = [
+    'action' => $action,
+    'selection' => $selection,
+    'env' => $env,
+];
+
+fwrite($socket, json_encode($payload) . PHP_EOL);
 
 stream_socket_shutdown($socket, STREAM_SHUT_WR);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Mantas6\FzfPhp\FuzzyFinder;
 use Mantas6\FzfPhp\Support\PreviewStyleHelper;
+use Mantas6\FzfPhp\ValueObjects\FinderEnv;
 use Symfony\Component\Process\Process;
 use Tests\FakeProcess;
 use Tests\FakeProcessHelper;
@@ -48,4 +49,19 @@ it('retrieves preview information using style helper', function (): void {
     );
 
     expect(static::getCount())->toBe(2);
+});
+
+it('passes through env variables', function (): void {
+    FakeProcessHelper::preview(function (): void {
+        //
+    });
+
+    fzf(
+        ['Apple', 'Orange', 'Grapefruit'],
+        preview: function ($_, FinderEnv $env): void {
+            expect($env->query)->toBe('test');
+        },
+    );
+
+    expect(static::getCount())->toBe(1);
 });

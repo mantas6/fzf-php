@@ -9,6 +9,7 @@ use Mantas6\FzfPhp\Concerns\PresentsForFinder;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Support\Helpers;
 use Mantas6\FzfPhp\Support\PreviewStyleHelper;
+use Mantas6\FzfPhp\ValueObjects\FinderEnv;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
@@ -157,13 +158,13 @@ class FuzzyFinder
 
     protected function respondToSocket(string $input, array $options): string
     {
-        $input = explode(PHP_EOL, $input);
-        array_shift($input);
-        $selection = implode(PHP_EOL, $input);
+        $input = json_decode($input, true);
 
-        $mapped = $this->mapFinderOutput([$selection], $options);
+        $mapped = $this->mapFinderOutput([$input['selection']], $options);
 
-        $output = ($this->preview)($mapped[0]);
+        $env = new FinderEnv($input['env']);
+
+        $output = ($this->preview)($mapped[0], $env);
 
         return match (true) {
             is_string($output) => $output,

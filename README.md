@@ -227,18 +227,39 @@ use function Mantas6\FzfPhp\style;
 
 $selected = fzf(
     // ...
-preview: function (string $item) {
-    return style()
-        ->table([
-            ['Original', $item],
-            ['Uppercase', strtoupper($item)],
-        ]);
+    preview: function (string $item) {
+        return style()
+            ->table([
+                ['Original', $item],
+                ['Uppercase', strtoupper($item)],
+            ]);
     }
 );
 ```
 
 - Use `->table()` for creating compact tables
 - Use `->block()` for creating text blocks
+
+#### Additional variables
+
+`fzf` provides additional variables to the preview (and other) child processes.
+
+```php
+<?php
+use Mantas6\FzfPhp\ValueObjects\FinderEnv;
+
+$selected = fzf(
+    // ...
+    preview: function (string $item, FinderEnv $env) {
+        // ...
+        $env->key, // The name of the last key pressed
+        $env->action, // The name of the last action performed
+        // ...
+    }
+);
+```
+
+Full set of variables are available at [`fzf` Reference - Environment variables exported to child processes](https://junegunn.github.io/fzf/reference/#environment-variables-exported-to-child-processes)
 
 ### Multi mode
 

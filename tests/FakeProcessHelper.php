@@ -20,6 +20,9 @@ class FakeProcessHelper
 
                 $process = new Process(
                     explode(' ', $previewCmd),
+                    env: [
+                        'FZF_QUERY' => 'test',
+                    ],
                 );
 
                 FakeProcess::setContext($process);
