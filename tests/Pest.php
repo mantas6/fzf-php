@@ -11,3 +11,11 @@ pest()->beforeEach(function (): void {
     FuzzyFinder::usingDefaultProcessClass();
     FakeProcess::reset();
 });
+
+expect()->pipe('toMatchSnapshot', function (Closure $next) {
+    if (is_string($this->value)) {
+        $this->value = trim($this->value);
+    }
+
+    return $next();
+});
