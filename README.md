@@ -43,7 +43,7 @@ use function Mantas6\FzfPhp\fzf;
 
 $selected = fzf(['Apple', 'Orange', 'Grapefruit']);
 
-// 'Apple'
+// returns 'Apple'
 ```
 - Returns `null` if user cancels the prompt
 
@@ -60,50 +60,32 @@ $selected = fzf(
     ]
 );
 
-// ['Apples', '1kg']
+// returns ['Apples', '1kg']
 ```
 
 - Each array element represents different column in the finder
 
 #### Objects
 
-##### Using `toArray`
-
 ```php
 <?php
 
 $selected = fzf(
     options: [
-        new Model('Apple'),
+        new Model('Apple'), // must implement toArray or PresentsForFinder interface
         new Model('Orange'),
-        new Model('Grapefruits'),
+        new Model('Grapefruit'),
     ]
 );
 
-// new Model('Apple')
+// returns new Model('Apple')
 ```
 
-- The object class must implement `toArray`
+To use objects as options, at least one is required:
 
-##### Implementing `PresentsForFinder` interface
-
-If using `toArray` method is not feasible, an interface can be implemented instead.
-
-```php
-<?php
-
-use Mantas6\FzfPhp\Concerns\PresentsForFinder;
-
-class Model implements PresentsForFinder
-{
-    protected string $name;
-
-    public function presentForFinder(): string
-    {
-        return $this->name;
-    }
-}
-```
+- Implement `toArray`
+- Implement `PresentsForFinder` interface
+- Provide presenter callback
 
 ### Options presentation
 
@@ -138,24 +120,27 @@ $selected = fzf(
 );
 ```
 
-### Options as object
+#### Implementing `PresentsForFinder` interface
 
-Instead of passing options as array, object can be used.
+Option objects can implement a special interface, that would work the same as providing a presenter callback.
 
 ```php
 <?php
 
-$selected = fzf(
-    options: new MyCustomCollection,
-);
+use Mantas6\FzfPhp\Concerns\PresentsForFinder;
+
+class Model implements PresentsForFinder
+{
+    protected string $name;
+
+    public function presentForFinder(): array|string
+    {
+        return $this->name;
+    }
+}
 ```
 
-The class needs to meet one of the following requirements:
-
-- Must implement the native `Traversable` interface
-- Needs to implement `toArray()` method
-
-### Options styling
+#### Styling
 
 Option columns can be styling using `cell()` helper function in the presenter callback.
 
@@ -175,7 +160,10 @@ $selected = fzf(
     present: fn (array $item): array => [
         $item['name'],
 
-        cell($item['weight'], fg: $item['weight'] > 2000 ? 'red' : 'green'),
+        cell(
+            value: $item['weight'],
+            fg: $item['weight'] > 2000 ? 'red' : 'green',
+        ),
     ],
 );
 ```
@@ -203,9 +191,11 @@ cell(
 );
 ```
 
+- Available colors: `red, green, yellow, blue, magenta, cyan, white, default, gray, bright-red, bright-green, bright-yellow, bright-blue, bright-magenta, bright-cyan, bright-white`
+
 More information can be found at [Symfony Docs: Table](https://symfony.com/doc/current/components/console/helpers/table.html)
 
-### Options preview
+### Preview
 
 Preview window can be enabled for each selected option.
 
@@ -261,6 +251,36 @@ $selected = fzf(
 
 Full set of variables are available at [`fzf` Reference - Environment variables exported to child processes](https://junegunn.github.io/fzf/reference/#environment-variables-exported-to-child-processes)
 
+### Headers
+
+Fixed header will be displayed if header list is passed.
+
+```php
+<?php
+
+$selected = fzf(
+    options: ['Apple', 'Orange', 'Grapefruit'],
+    headers: ['Fruit'],
+);
+```
+
+### Options as object
+
+Instead of passing options as array, object can be used.
+
+```php
+<?php
+
+$selected = fzf(
+    options: new MyCustomCollection,
+);
+```
+
+The class needs to meet one of the following requirements:
+
+- Must implement the native `Traversable` interface
+- Needs to implement `toArray()` method
+
 ### Multi mode
 
 Retrieve multiple options from a list.
@@ -296,19 +316,6 @@ $selected = fzf(
 - Arguments `delimiter` (or `d`), `with-nth` are used internally, and will be overridden if specified
 - Arguments that transform output may not be supported
 - Consult [`fzf` Reference](https://junegunn.github.io/fzf/reference) for all available options
-
-### Headers
-
-Fixed header will be displayed if header list is passed.
-
-```php
-<?php
-
-$selected = fzf(
-    options: ['Apple', 'Orange', 'Grapefruit'],
-    headers: ['Fruit'],
-);
-```
 
 ### Reusable object approach
 

@@ -43,4 +43,9 @@ readonly class FinderEnv
 
         return $this->env[$key];
     }
+
+    public function all(): array
+    {
+        return $this->env;
+    }
 }

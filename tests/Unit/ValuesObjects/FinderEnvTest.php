@@ -14,4 +14,6 @@ it('queries env array', function (): void {
 
     expect($env->pos)->toBe('7');
     expect($env->totalCount)->toBe('20');
+
+    expect($env->all())->toBe($vars);
 });
