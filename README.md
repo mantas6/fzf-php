@@ -122,7 +122,7 @@ $selected = fzf(
 
 #### Implementing `PresentsForFinder` interface
 
-If using `toArray` method is not feasible, an interface can be implemented instead.
+Option objects can implement a special interface, that would work the same as providing a presenter callback.
 
 ```php
 <?php
@@ -133,7 +133,7 @@ class Model implements PresentsForFinder
 {
     protected string $name;
 
-    public function presentForFinder(): string
+    public function presentForFinder(): array|string
     {
         return $this->name;
     }
