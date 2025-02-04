@@ -114,24 +114,9 @@ class FuzzyFinder
             ),
         ];
 
-        $input = null;
-
-        if (!$options instanceof Closure) {
-            $optionsOnStart = $this->normalizeOptionsType($options);
-
-            $this->state->setAvailableOptions($optionsOnStart);
-
-            $preparedOptionsForCmd = $this->prepareOptionsForCommand(
-                $optionsOnStart,
-                $arguments,
-            );
-
-            $input = implode(PHP_EOL, $preparedOptionsForCmd);
-        }
-
         $process = new static::$processClass(
             command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
-            input: $input,
+            input: $this->prepareInputForCommand($options, $arguments),
             timeout: 0,
         );
 
@@ -355,9 +340,24 @@ class FuzzyFinder
         return !empty($this->arguments['multi']) || !empty($this->arguments['m']);
     }
 
-    /**
-     * @return array <int<0, max>, string>
-     */
+    protected function prepareInputForCommand($options, array $arguments): ?string
+    {
+        if ($options instanceof Closure) {
+            return null;
+        }
+
+        $optionsOnStart = $this->normalizeOptionsType($options);
+
+        $this->state->setAvailableOptions($optionsOnStart);
+
+        $preparedOptionsForCmd = $this->prepareOptionsForCommand(
+            $optionsOnStart,
+            $arguments,
+        );
+
+        return implode(PHP_EOL, $preparedOptionsForCmd);
+    }
+
     protected function prepareArgumentsForCommand(array $arguments): array
     {
         $commandArguments = [];
@@ -375,9 +375,6 @@ class FuzzyFinder
         return $commandArguments;
     }
 
-    /**
-     * @return array <string>
-     */
     protected static function resolveCommand(): array
     {
         if (static::$command !== null && static::$command !== []) {
