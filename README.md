@@ -43,7 +43,7 @@ use function Mantas6\FzfPhp\fzf;
 
 $selected = fzf(['Apple', 'Orange', 'Grapefruit']);
 
-// 'Apple'
+// returns 'Apple'
 ```
 - Returns `null` if user cancels the prompt
 
@@ -60,7 +60,7 @@ $selected = fzf(
     ]
 );
 
-// ['Apples', '1kg']
+// returns ['Apples', '1kg']
 ```
 
 - Each array element represents different column in the finder
@@ -78,7 +78,7 @@ $selected = fzf(
     ]
 );
 
-// new Model('Apple')
+// returns new Model('Apple')
 ```
 
 To use objects as options, at least one is required:
@@ -160,7 +160,10 @@ $selected = fzf(
     present: fn (array $item): array => [
         $item['name'],
 
-        cell($item['weight'], fg: $item['weight'] > 2000 ? 'red' : 'green'),
+        cell(
+            value: $item['weight'],
+            fg: $item['weight'] > 2000 ? 'red' : 'green',
+        ),
     ],
 );
 ```
