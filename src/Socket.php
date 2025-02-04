@@ -68,6 +68,11 @@ class Socket
         fclose($conn);
     }
 
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
     private function generateSocketPath(): string
     {
         $process = new Process(['mktemp', '-d']);

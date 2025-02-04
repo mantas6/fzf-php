@@ -100,16 +100,12 @@ class FuzzyFinder
     {
         static::prepareBinary();
 
-        $this->state = new State;
-
-        $socket = new Socket;
-        $socketPath = $socket->start();
+        $this->state = State::default();
 
         $arguments = [
             ...static::$defaultArguments,
             ...$this->getInternalArguments(
                 $this->arguments,
-                $socketPath,
                 $options,
             ),
         ];
@@ -127,7 +123,7 @@ class FuzzyFinder
         ]);
 
         while ($process->isRunning()) {
-            $socket->listen(function (string $requestJson) use ($options, $process, $arguments): string {
+            $this->state->socket->listen(function (string $requestJson) use ($options, $process, $arguments): string {
                 try {
                     $request = SocketRequest::fromJson($requestJson);
 
@@ -143,7 +139,7 @@ class FuzzyFinder
             });
         }
 
-        $socket->stop();
+        $this->state->socket->stop();
 
         $exitCode = $process->getExitCode();
         $error = $process->getErrorOutput();
@@ -300,7 +296,7 @@ class FuzzyFinder
         return $values;
     }
 
-    protected function getInternalArguments(array $arguments, string $socketPath, $options): array
+    protected function getInternalArguments(array $arguments, $options): array
     {
         $args = [
             'ansi' => true,
@@ -315,6 +311,8 @@ class FuzzyFinder
         if ($this->headers !== null) {
             $args['header-lines'] = '1';
         }
+
+        $socketPath = $this->state->socket->getPath();
 
         if ($this->preview instanceof Closure) {
             $basePath = Helpers::basePath();
