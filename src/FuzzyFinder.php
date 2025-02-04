@@ -11,6 +11,7 @@ use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Support\Helpers;
 use Mantas6\FzfPhp\Support\PreviewStyleHelper;
 use Mantas6\FzfPhp\ValueObjects\FinderEnv;
+use Mantas6\FzfPhp\ValueObjects\State;
 use Mantas6\FzfPhp\ValueObjects\SocketRequest;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -39,6 +40,8 @@ class FuzzyFinder
     protected ?Closure $preview = null;
 
     protected ?array $headers = null;
+
+    protected State $state;
 
     public static function usingCommand(array $cmd): void
     {
@@ -97,6 +100,8 @@ class FuzzyFinder
     {
         static::prepareBinary();
 
+        $this->state = new State;
+
         $socket = new Socket;
         $socketPath = $socket->start();
 
@@ -113,6 +118,8 @@ class FuzzyFinder
 
         if (!$options instanceof Closure) {
             $optionsOnStart = $this->normalizeOptionsType($options);
+
+            $this->state->setAvailableOptions($optionsOnStart);
 
             $preparedOptionsForCmd = $this->prepareOptionsForCommand(
                 $optionsOnStart,
@@ -166,7 +173,7 @@ class FuzzyFinder
 
         $selected = $this->mapFinderOutput(
             selected: explode(PHP_EOL, $process->getOutput()),
-            options: $optionsOnStart,
+            options: $this->state->getAvailableOptions(),
         );
 
         if ($this->isMultiMode()) {
@@ -181,6 +188,8 @@ class FuzzyFinder
         $options = $this->normalizeOptionsType(
             $this->processInvokableOptions($optionsCallback, $request->env),
         );
+
+        $this->state->setAvailableOptions($options);
 
         $options = $this->prepareOptionsForCommand($options, $arguments);
 

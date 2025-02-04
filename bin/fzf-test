@@ -27,15 +27,15 @@ foreach (
 
 // FuzzyFinder::usingProcessClass(FakeProcess::class);
 
-$selection = fzf(function (?FinderEnv $env) {
+$selection = fzf(function (FinderEnv $env) {
     $options = [
         'First',
         'Second',
         'Third',
-        $env?->query,
+        $env->query,
     ];
 
-    $len = strlen($env?->query ?: '');
+    $len = strlen($env->query ?: '');
 
     $options = [...$options, ...range(1, $len)];
     return $options;
