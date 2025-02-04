@@ -227,6 +227,19 @@ $selected = fzf(
 - Use `->table()` for creating compact tables
 - Use `->block()` for creating text blocks
 
+### Headers
+
+Fixed header will be displayed if header list is passed.
+
+```php
+<?php
+
+$selected = fzf(
+    options: ['Apple', 'Orange', 'Grapefruit'],
+    headers: ['Fruit'],
+);
+```
+
 #### Additional variables
 
 `fzf` provides additional variables to the preview (and other) child processes.
@@ -300,19 +313,6 @@ $selected = fzf(
 - Arguments `delimiter` (or `d`), `with-nth` are used internally, and will be overridden if specified
 - Arguments that transform output may not be supported
 - Consult [`fzf` Reference](https://junegunn.github.io/fzf/reference) for all available options
-
-### Headers
-
-Fixed header will be displayed if header list is passed.
-
-```php
-<?php
-
-$selected = fzf(
-    options: ['Apple', 'Orange', 'Grapefruit'],
-    headers: ['Fruit'],
-);
-```
 
 ### Reusable object approach
 
