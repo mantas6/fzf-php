@@ -109,13 +109,22 @@ class FuzzyFinder
             ),
         ];
 
-        $optionsOnStartup = $this->normalizeOptionsType(
-            $this->processInvokableOptions($options),
-        );
+        $input = null;
+
+        if (!$options instanceof Closure) {
+            $optionsOnStart = $this->normalizeOptionsType($options);
+
+            $preparedOptionsForCmd = $this->prepareOptionsForCommand(
+                $optionsOnStart,
+                $arguments,
+            );
+
+            $input = implode(PHP_EOL, $preparedOptionsForCmd);
+        }
 
         $process = new static::$processClass(
             command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
-            input: implode(PHP_EOL, $this->prepareOptionsForCommand($optionsOnStartup, $arguments)),
+            input: $input,
             timeout: 0,
         );
 
@@ -157,7 +166,7 @@ class FuzzyFinder
 
         $selected = $this->mapFinderOutput(
             selected: explode(PHP_EOL, $process->getOutput()),
-            options: $optionsOnStartup,
+            options: $optionsOnStart,
         );
 
         if ($this->isMultiMode()) {
@@ -191,7 +200,7 @@ class FuzzyFinder
         };
     }
 
-    protected function processInvokableOptions($options, ?FinderEnv $env = null): mixed
+    protected function processInvokableOptions($options, FinderEnv $env): mixed
     {
         return match ($options instanceof Closure) {
             true => $options($env),
@@ -207,7 +216,7 @@ class FuzzyFinder
                 $options instanceof Traversable => iterator_to_array($options),
                 // toArray()
                 is_object($options) && method_exists($options, 'toArray') => $options->toArray(),
-                // ...
+                    // ...
                 default => (array) $options,
             }
         );
@@ -253,7 +262,7 @@ class FuzzyFinder
             $value instanceof PresentsForFinder => Helpers::alwaysArray($value->presentForFinder()),
             // toArray()
             is_object($value) && method_exists($value, 'toArray') => $value->toArray(),
-            // ...
+                // ...
             default => (array) $value,
         };
     }
@@ -320,7 +329,12 @@ class FuzzyFinder
 
         if ($options instanceof Closure) {
             $basePath = Helpers::basePath();
-            $args['bind'] = "change:reload($basePath/bin/fzf-php-socket unix://$socketPath reload)+first";
+
+            $args['bind'] = implode(',', [
+                "change:reload($basePath/bin/fzf-php-socket unix://$socketPath reload)+first",
+                "start:reload($basePath/bin/fzf-php-socket unix://$socketPath reload)+first",
+            ]);
+
             $args['disabled'] = true;
         }
 
