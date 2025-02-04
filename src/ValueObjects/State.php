@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mantas6\FzfPhp\ValueObjects;
 
 use Mantas6\FzfPhp\Socket;
 
-class State
+final class State
 {
     private array $availableOptions = [];
     private array $arguments = [];

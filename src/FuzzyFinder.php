@@ -11,8 +11,8 @@ use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Support\Helpers;
 use Mantas6\FzfPhp\Support\PreviewStyleHelper;
 use Mantas6\FzfPhp\ValueObjects\FinderEnv;
-use Mantas6\FzfPhp\ValueObjects\State;
 use Mantas6\FzfPhp\ValueObjects\SocketRequest;
+use Mantas6\FzfPhp\ValueObjects\State;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
@@ -127,7 +127,6 @@ class FuzzyFinder
                     return match ($request->action) {
                         Action::Preview => $this->respondToPreview($request, $options),
                         Action::Reload => $this->respondToReload($request, $options),
-                        default => '',
                     };
                 } catch (Throwable $e) {
                     $process->stop();
@@ -169,7 +168,7 @@ class FuzzyFinder
 
         $this->state->setAvailableOptions($options);
 
-        $options = $this->prepareOptionsForCommand($options, $this->state->getArguments());
+        $options = $this->prepareOptionsForCommand($options);
 
         return implode(PHP_EOL, $options);
     }
@@ -203,7 +202,7 @@ class FuzzyFinder
                 $options instanceof Traversable => iterator_to_array($options),
                 // toArray()
                 is_object($options) && method_exists($options, 'toArray') => $options->toArray(),
-                    // ...
+                // ...
                 default => (array) $options,
             }
         );
@@ -250,7 +249,7 @@ class FuzzyFinder
             $value instanceof PresentsForFinder => Helpers::alwaysArray($value->presentForFinder()),
             // toArray()
             is_object($value) && method_exists($value, 'toArray') => $value->toArray(),
-                // ...
+            // ...
             default => (array) $value,
         };
     }
