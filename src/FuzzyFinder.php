@@ -100,19 +100,16 @@ class FuzzyFinder
     {
         static::prepareBinary();
 
-        $this->state = State::default();
+        $this->state = State::prepareDefault();
 
-        $arguments = [
+        $this->state->setArguments([
             ...static::$defaultArguments,
-            ...$this->getInternalArguments(
-                $this->arguments,
-                $options,
-            ),
-        ];
+            ...$this->getInternalArguments($options),
+        ]);
 
         $process = new static::$processClass(
-            command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
-            input: $this->prepareInputForCommand($options, $arguments),
+            command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand()],
+            input: $this->prepareInputForCommand($options),
             timeout: 0,
         );
 
@@ -123,13 +120,13 @@ class FuzzyFinder
         ]);
 
         while ($process->isRunning()) {
-            $this->state->socket->listen(function (string $requestJson) use ($options, $process, $arguments): string {
+            $this->state->socket->listen(function (string $requestJson) use ($options, $process): string {
                 try {
                     $request = SocketRequest::fromJson($requestJson);
 
                     return match ($request->action) {
                         Action::Preview => $this->respondToPreview($request, $options),
-                        Action::Reload => $this->respondToReload($request, $options, $arguments),
+                        Action::Reload => $this->respondToReload($request, $options),
                         default => '',
                     };
                 } catch (Throwable $e) {
@@ -164,7 +161,7 @@ class FuzzyFinder
         return $selected[0];
     }
 
-    protected function respondToReload(SocketRequest $request, Closure $optionsCallback, array $arguments): string
+    protected function respondToReload(SocketRequest $request, Closure $optionsCallback): string
     {
         $options = $this->normalizeOptionsType(
             $this->processInvokableOptions($optionsCallback, $request->env),
@@ -172,7 +169,7 @@ class FuzzyFinder
 
         $this->state->setAvailableOptions($options);
 
-        $options = $this->prepareOptionsForCommand($options, $arguments);
+        $options = $this->prepareOptionsForCommand($options, $this->state->getArguments());
 
         return implode(PHP_EOL, $options);
     }
@@ -212,10 +209,11 @@ class FuzzyFinder
         );
     }
 
-    protected function prepareOptionsForCommand($options, array $arguments): array
+    protected function prepareOptionsForCommand($options): array
     {
         $options = $this->prepareOptionsForTable($options);
-        $options = $this->convertOptionsToTable($options, $arguments);
+        $options = $this->convertOptionsToTable($options);
+        $arguments = $this->state->getArguments();
 
         $headersLinesCount = ($arguments['header-lines'] ?? false) ?: 0;
 
@@ -257,8 +255,10 @@ class FuzzyFinder
         };
     }
 
-    protected function convertOptionsToTable(array $options, array $arguments): array
+    protected function convertOptionsToTable(array $options): array
     {
+        $arguments = $this->state->getArguments();
+
         $output = new BufferedOutput(
             decorated: !empty($arguments['ansi']),
         );
@@ -296,12 +296,12 @@ class FuzzyFinder
         return $values;
     }
 
-    protected function getInternalArguments(array $arguments, $options): array
+    protected function getInternalArguments($options): array
     {
         $args = [
             'ansi' => true,
 
-            ...$arguments,
+            ...$this->arguments,
 
             'd' => false,
             'delimiter' => static::$delimiter,
@@ -338,7 +338,7 @@ class FuzzyFinder
         return !empty($this->arguments['multi']) || !empty($this->arguments['m']);
     }
 
-    protected function prepareInputForCommand($options, array $arguments): ?string
+    protected function prepareInputForCommand($options): ?string
     {
         if ($options instanceof Closure) {
             return null;
@@ -348,19 +348,16 @@ class FuzzyFinder
 
         $this->state->setAvailableOptions($optionsOnStart);
 
-        $preparedOptionsForCmd = $this->prepareOptionsForCommand(
-            $optionsOnStart,
-            $arguments,
-        );
+        $preparedOptionsForCmd = $this->prepareOptionsForCommand($optionsOnStart);
 
         return implode(PHP_EOL, $preparedOptionsForCmd);
     }
 
-    protected function prepareArgumentsForCommand(array $arguments): array
+    protected function prepareArgumentsForCommand(): array
     {
         $commandArguments = [];
 
-        foreach ($arguments as $key => $value) {
+        foreach ($this->state->getArguments() as $key => $value) {
             if ($value !== false) {
                 $commandArguments[] = strlen($key) > 1 ? "--$key" : "-$key";
 

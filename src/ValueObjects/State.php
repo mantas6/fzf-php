@@ -7,13 +7,14 @@ use Mantas6\FzfPhp\Socket;
 class State
 {
     private array $availableOptions = [];
+    private array $arguments = [];
 
     public function __construct(public Socket $socket = new Socket)
     {
         //
     }
 
-    public static function default(): static
+    public static function prepareDefault(): static
     {
         $state = new static;
 
@@ -32,5 +33,17 @@ class State
     public function getAvailableOptions(): array
     {
         return $this->availableOptions;
+    }
+
+    public function setArguments(array $arguments): self
+    {
+        $this->arguments = $arguments;
+
+        return $this;
+    }
+
+    public function getArguments(): array
+    {
+        return $this->arguments;
     }
 }
