@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 use Mantas6\FzfPhp\Downloader;
 use Mantas6\FzfPhp\FuzzyFinder;
+use Mantas6\FzfPhp\ValueObjects\FinderEnv;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Tests\FakeProcess;
 
@@ -24,12 +25,20 @@ foreach (
     }
 }
 
-FuzzyFinder::usingProcessClass(FakeProcess::class);
+// FuzzyFinder::usingProcessClass(FakeProcess::class);
 
-$selection = fzf([
-    'First',
-    'Second',
-    'Third',
-]);
+$selection = fzf(function (?FinderEnv $env) {
+    $options = [
+        'First',
+        'Second',
+        'Third',
+        $env?->query,
+    ];
+
+    $len = strlen($env?->query ?: '');
+
+    $options = [...$options, ...range(1, $len)];
+    return $options;
+});
 
 dd($selection);

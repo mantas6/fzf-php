@@ -6,10 +6,12 @@ namespace Mantas6\FzfPhp;
 
 use Closure;
 use Mantas6\FzfPhp\Concerns\PresentsForFinder;
+use Mantas6\FzfPhp\Enums\Action;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Support\Helpers;
 use Mantas6\FzfPhp\Support\PreviewStyleHelper;
 use Mantas6\FzfPhp\ValueObjects\FinderEnv;
+use Mantas6\FzfPhp\ValueObjects\SocketRequest;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
@@ -91,7 +93,7 @@ class FuzzyFinder
         return $this;
     }
 
-    public function ask($options = []): mixed
+    public function ask($options): mixed
     {
         static::prepareBinary();
 
@@ -103,14 +105,17 @@ class FuzzyFinder
             ...$this->getInternalArguments(
                 $this->arguments,
                 $socketPath,
+                $options,
             ),
         ];
 
-        $options = $this->normalizeOptionsType($options);
+        $optionsOnStartup = $this->normalizeOptionsType(
+            $this->processInvokableOptions($options),
+        );
 
         $process = new static::$processClass(
             command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
-            input: implode(PHP_EOL, $this->prepareOptionsForCommand($options, $arguments)),
+            input: implode(PHP_EOL, $this->prepareOptionsForCommand($optionsOnStartup, $arguments)),
             timeout: 0,
         );
 
@@ -121,9 +126,15 @@ class FuzzyFinder
         ]);
 
         while ($process->isRunning()) {
-            $socket->listen(function (string $input) use ($options, $process): string {
+            $socket->listen(function (string $requestJson) use ($options, $process, $arguments): string {
                 try {
-                    return $this->respondToSocket($input, $options);
+                    $request = SocketRequest::fromJson($requestJson);
+
+                    return match ($request->action) {
+                        Action::Preview => $this->respondToPreview($request, $options),
+                        Action::Reload => $this->respondToReload($request, $options, $arguments),
+                        default => '',
+                    };
                 } catch (Throwable $e) {
                     $process->stop();
                     throw $e;
@@ -146,7 +157,7 @@ class FuzzyFinder
 
         $selected = $this->mapFinderOutput(
             selected: explode(PHP_EOL, $process->getOutput()),
-            options: $options,
+            options: $optionsOnStartup,
         );
 
         if ($this->isMultiMode()) {
@@ -156,20 +167,35 @@ class FuzzyFinder
         return $selected[0];
     }
 
-    protected function respondToSocket(string $input, array $options): string
+    protected function respondToReload(SocketRequest $request, Closure $optionsCallback, array $arguments): string
     {
-        $input = json_decode($input, true);
+        $options = $this->normalizeOptionsType(
+            $this->processInvokableOptions($optionsCallback, $request->env),
+        );
 
-        $mapped = $this->mapFinderOutput([$input['selection']], $options);
+        $options = $this->prepareOptionsForCommand($options, $arguments);
 
-        $env = new FinderEnv($input['env']);
+        return implode(PHP_EOL, $options);
+    }
 
-        $output = ($this->preview)($mapped[0], $env);
+    protected function respondToPreview(SocketRequest $request, array $options): string
+    {
+        $mapped = $this->mapFinderOutput([$request->selection], $options);
+
+        $output = ($this->preview)($mapped[0], $request->env);
 
         return match (true) {
             is_string($output) => $output,
             $output instanceof PreviewStyleHelper => $output->render(),
             default => (string) $output,
+        };
+    }
+
+    protected function processInvokableOptions($options, ?FinderEnv $env = null): mixed
+    {
+        return match ($options instanceof Closure) {
+            true => $options($env),
+            false => $options,
         };
     }
 
@@ -271,7 +297,7 @@ class FuzzyFinder
         return $values;
     }
 
-    protected function getInternalArguments(array $arguments, string $socketPath): array
+    protected function getInternalArguments(array $arguments, string $socketPath, $options): array
     {
         $args = [
             'ansi' => true,
@@ -290,6 +316,12 @@ class FuzzyFinder
         if ($this->preview instanceof Closure) {
             $basePath = Helpers::basePath();
             $args['preview'] = "$basePath/bin/fzf-php-socket unix://$socketPath preview {}";
+        }
+
+        if ($options instanceof Closure) {
+            $basePath = Helpers::basePath();
+            $args['bind'] = "change:reload($basePath/bin/fzf-php-socket unix://$socketPath reload)+first";
+            $args['disabled'] = true;
         }
 
         return $args;
