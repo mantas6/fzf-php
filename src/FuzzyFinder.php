@@ -289,7 +289,7 @@ class FuzzyFinder
 
         if ($this->preview instanceof Closure) {
             $basePath = Helpers::basePath();
-            $args['preview'] = "$basePath/bin/fzf-php-socket unix://$socketPath preview {}";
+            $args['preview'] = "$basePath/vendor/bin/fzf-php-socket unix://$socketPath preview {}";
         }
 
         return $args;
