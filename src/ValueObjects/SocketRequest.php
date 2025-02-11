@@ -12,12 +12,12 @@ use Mantas6\FzfPhp\Enums\Action;
  * @property-read ?string $selection
  * @property-read FinderEnv $env
  */
-final class SocketRequest
+final readonly class SocketRequest
 {
     public function __construct(
-        private readonly Action $action,
-        private readonly ?string $selection,
-        private readonly FinderEnv $env,
+        private Action $action,
+        private ?string $selection,
+        private FinderEnv $env,
     ) {
         //
     }
@@ -28,7 +28,7 @@ final class SocketRequest
 
         $env = new FinderEnv($input['env']);
 
-        return new static(
+        return new self(
             action: Action::from($input['action']),
             selection: $input['selection'],
             env: $env,

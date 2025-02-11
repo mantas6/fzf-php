@@ -14,3 +14,9 @@ it('creates and unlinks socket file', function (): void {
     expect($path)->not->toBeFile();
     expect(dirname($path))->not->toBeDirectory();
 });
+
+it('returns development bin path', function (): void {
+    $path = Socket::getBinPath();
+    expect($path)->toEndWith('bin/fzf-php-socket');
+    expect($path)->not->toEndWith('vendor/bin/fzf-php-socket');
+});

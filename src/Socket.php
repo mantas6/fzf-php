@@ -6,6 +6,7 @@ namespace Mantas6\FzfPhp;
 
 use Closure;
 use Exception;
+use Mantas6\FzfPhp\Support\Helpers;
 use Symfony\Component\Process\Process;
 
 /**
@@ -71,6 +72,20 @@ class Socket
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    public static function getBinPath(): string
+    {
+        $basePath = Helpers::basePath();
+        $binPath = 'bin/fzf-php-socket';
+
+        if (file_exists("$basePath/$binPath")) {
+            // Development install
+            return "$basePath/$binPath";
+        }
+
+        // User install
+        return "$basePath/vendor/$binPath";
     }
 
     private function generateSocketPath(): string

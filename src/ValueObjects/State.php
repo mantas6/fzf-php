@@ -18,7 +18,7 @@ final class State
 
     public static function prepareDefault(): static
     {
-        $state = new static;
+        $state = new self;
 
         $state->socket->start();
 

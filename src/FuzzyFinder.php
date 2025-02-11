@@ -314,16 +314,16 @@ class FuzzyFinder
         $socketPath = $this->state->socket->getPath();
 
         if ($this->preview instanceof Closure) {
-            $basePath = Helpers::basePath();
-            $args['preview'] = "$basePath/bin/fzf-php-socket unix://$socketPath preview {}";
+            $binPath = Socket::getBinPath();
+            $args['preview'] = "$binPath unix://$socketPath preview {}";
         }
 
         if ($options instanceof Closure) {
-            $basePath = Helpers::basePath();
+            $binPath = Socket::getBinPath();
 
             $args['bind'] = implode(',', [
-                "change:reload($basePath/bin/fzf-php-socket unix://$socketPath reload)+first",
-                "start:reload($basePath/bin/fzf-php-socket unix://$socketPath reload)+first",
+                "change:reload($binPath unix://$socketPath reload)+first",
+                "start:reload($binPath unix://$socketPath reload)+first",
             ]);
 
             $args['disabled'] = true;
