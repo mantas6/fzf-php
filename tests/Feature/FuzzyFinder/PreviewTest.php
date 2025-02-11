@@ -14,6 +14,21 @@ use function Mantas6\FzfPhp\style;
 
 beforeEach(fn () => FuzzyFinder::usingProcessClass(FakeProcess::class));
 
+it('passes preview parameter to fzf', function (): void {
+    FakeProcessHelper::preview();
+
+    fzf(
+        ['Apple', 'Orange', 'Grapefruit'],
+        preview: fn (string $item) => strtoupper($item),
+    );
+
+    $value = FakeProcess::getCommandAfter('--preview');
+
+    expect($value)->toEndWith('preview {}')
+        ->toContain('bin/fzf-php-socket ')
+        ->toContain(' unix://');
+});
+
 it('retrieves preview information', function (): void {
     FakeProcessHelper::preview(function (Process $process): void {
         expect($process->getExitCode())
@@ -52,9 +67,7 @@ it('retrieves preview information using style helper', function (): void {
 });
 
 it('passes through env variables', function (): void {
-    FakeProcessHelper::preview(function (): void {
-        //
-    });
+    FakeProcessHelper::preview();
 
     fzf(
         ['Apple', 'Orange', 'Grapefruit'],

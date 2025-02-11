@@ -9,7 +9,7 @@ use Symfony\Component\Process\Process;
 
 class FakeProcessHelper
 {
-    public static function preview(Closure $assertions): void
+    public static function preview(?Closure $assertions = null): void
     {
         FakeProcess::fakeRunning(function () use ($assertions): bool {
             if (FakeProcess::getContext() === null) {
@@ -37,7 +37,9 @@ class FakeProcessHelper
                 return true;
             }
 
-            $assertions($process);
+            if ($assertions instanceof Closure) {
+                $assertions($process);
+            }
 
             return false;
         });
