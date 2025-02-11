@@ -13,7 +13,7 @@ class FakeProcessHelper
     {
         FakeProcess::fakeRunning(function () use ($assertions): bool {
             if (FakeProcess::getContext() === null) {
-                $options = explode(PHP_EOL, FakeProcess::$lastInput);
+                $options = FakeProcess::getInputList();
 
                 $previewCmd = FakeProcess::getCommandAfter('--preview');
                 $previewCmd = str_replace('{}', $options[0], $previewCmd);
