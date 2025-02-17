@@ -9,11 +9,11 @@ use Symfony\Component\Process\Process;
 
 class FakeProcessHelper
 {
-    public static function preview(Closure $assertions): void
+    public static function preview(?Closure $assertions = null): void
     {
         FakeProcess::fakeRunning(function () use ($assertions): bool {
             if (FakeProcess::getContext() === null) {
-                $options = explode(PHP_EOL, FakeProcess::$lastInput);
+                $options = FakeProcess::getInputList();
 
                 $previewCmd = FakeProcess::getCommandAfter('--preview');
                 $previewCmd = str_replace('{}', $options[0], $previewCmd);
@@ -37,7 +37,9 @@ class FakeProcessHelper
                 return true;
             }
 
-            $assertions($process);
+            if ($assertions instanceof Closure) {
+                $assertions($process);
+            }
 
             return false;
         });

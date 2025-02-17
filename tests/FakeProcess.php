@@ -31,6 +31,11 @@ final class FakeProcess
         self::$lastTimeout = $timeout;
     }
 
+    public static function getInputList(): array
+    {
+        return explode(PHP_EOL, self::$lastInput);
+    }
+
     public static function getLastCommandString(): string
     {
         return implode(' ', self::$lastCommand);

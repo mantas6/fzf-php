@@ -6,10 +6,13 @@ namespace Mantas6\FzfPhp;
 
 use Closure;
 use Mantas6\FzfPhp\Concerns\PresentsForFinder;
+use Mantas6\FzfPhp\Enums\Action;
 use Mantas6\FzfPhp\Exceptions\ProcessException;
 use Mantas6\FzfPhp\Support\Helpers;
 use Mantas6\FzfPhp\Support\PreviewStyleHelper;
 use Mantas6\FzfPhp\ValueObjects\FinderEnv;
+use Mantas6\FzfPhp\ValueObjects\SocketRequest;
+use Mantas6\FzfPhp\ValueObjects\State;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
@@ -37,6 +40,8 @@ class FuzzyFinder
     protected ?Closure $preview = null;
 
     protected ?array $headers = null;
+
+    protected State $state;
 
     public static function usingCommand(array $cmd): void
     {
@@ -91,26 +96,20 @@ class FuzzyFinder
         return $this;
     }
 
-    public function ask($options = []): mixed
+    public function ask($options): mixed
     {
         static::prepareBinary();
 
-        $socket = new Socket;
-        $socketPath = $socket->start();
+        $this->state = State::prepareDefault();
 
-        $arguments = [
+        $this->state->setArguments([
             ...static::$defaultArguments,
-            ...$this->getInternalArguments(
-                $this->arguments,
-                $socketPath,
-            ),
-        ];
-
-        $options = $this->normalizeOptionsType($options);
+            ...$this->getInternalArguments($options),
+        ]);
 
         $process = new static::$processClass(
-            command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand($arguments)],
-            input: implode(PHP_EOL, $this->prepareOptionsForCommand($options, $arguments)),
+            command: [...static::resolveCommand(), ...$this->prepareArgumentsForCommand()],
+            input: $this->prepareInputForCommand($options),
             timeout: 0,
         );
 
@@ -121,9 +120,14 @@ class FuzzyFinder
         ]);
 
         while ($process->isRunning()) {
-            $socket->listen(function (string $input) use ($options, $process): string {
+            $this->state->socket->listen(function (string $requestJson) use ($options, $process): string {
                 try {
-                    return $this->respondToSocket($input, $options);
+                    $request = SocketRequest::fromJson($requestJson);
+
+                    return match ($request->action) {
+                        Action::Preview => $this->respondToPreview($request, $options),
+                        Action::Reload => $this->respondToReload($request, $options),
+                    };
                 } catch (Throwable $e) {
                     $process->stop();
                     throw $e;
@@ -131,7 +135,7 @@ class FuzzyFinder
             });
         }
 
-        $socket->stop();
+        $this->state->socket->stop();
 
         $exitCode = $process->getExitCode();
         $error = $process->getErrorOutput();
@@ -146,7 +150,7 @@ class FuzzyFinder
 
         $selected = $this->mapFinderOutput(
             selected: explode(PHP_EOL, $process->getOutput()),
-            options: $options,
+            options: $this->state->getAvailableOptions(),
         );
 
         if ($this->isMultiMode()) {
@@ -156,20 +160,37 @@ class FuzzyFinder
         return $selected[0];
     }
 
-    protected function respondToSocket(string $input, array $options): string
+    protected function respondToReload(SocketRequest $request, Closure $optionsCallback): string
     {
-        $input = json_decode($input, true);
+        $options = $this->normalizeOptionsType(
+            $this->processInvokableOptions($optionsCallback, $request->env),
+        );
 
-        $mapped = $this->mapFinderOutput([$input['selection']], $options);
+        $this->state->setAvailableOptions($options);
 
-        $env = new FinderEnv($input['env']);
+        $options = $this->prepareOptionsForCommand($options);
 
-        $output = ($this->preview)($mapped[0], $env);
+        return implode(PHP_EOL, $options);
+    }
+
+    protected function respondToPreview(SocketRequest $request, array $options): string
+    {
+        $mapped = $this->mapFinderOutput([$request->selection], $options);
+
+        $output = ($this->preview)($mapped[0], $request->env);
 
         return match (true) {
             is_string($output) => $output,
             $output instanceof PreviewStyleHelper => $output->render(),
             default => (string) $output,
+        };
+    }
+
+    protected function processInvokableOptions($options, FinderEnv $env): mixed
+    {
+        return match ($options instanceof Closure) {
+            true => $options($env),
+            false => $options,
         };
     }
 
@@ -187,10 +208,11 @@ class FuzzyFinder
         );
     }
 
-    protected function prepareOptionsForCommand($options, array $arguments): array
+    protected function prepareOptionsForCommand($options): array
     {
         $options = $this->prepareOptionsForTable($options);
-        $options = $this->convertOptionsToTable($options, $arguments);
+        $options = $this->convertOptionsToTable($options);
+        $arguments = $this->state->getArguments();
 
         $headersLinesCount = ($arguments['header-lines'] ?? false) ?: 0;
 
@@ -232,8 +254,10 @@ class FuzzyFinder
         };
     }
 
-    protected function convertOptionsToTable(array $options, array $arguments): array
+    protected function convertOptionsToTable(array $options): array
     {
+        $arguments = $this->state->getArguments();
+
         $output = new BufferedOutput(
             decorated: !empty($arguments['ansi']),
         );
@@ -271,12 +295,12 @@ class FuzzyFinder
         return $values;
     }
 
-    protected function getInternalArguments(array $arguments, string $socketPath): array
+    protected function getInternalArguments($options): array
     {
         $args = [
             'ansi' => true,
 
-            ...$arguments,
+            ...$this->arguments,
 
             'd' => false,
             'delimiter' => static::$delimiter,
@@ -287,9 +311,22 @@ class FuzzyFinder
             $args['header-lines'] = '1';
         }
 
+        $socketPath = $this->state->socket->getPath();
+
         if ($this->preview instanceof Closure) {
-            $basePath = Helpers::basePath();
-            $args['preview'] = "$basePath/bin/fzf-php-socket unix://$socketPath preview {}";
+            $binPath = Socket::getBinPath();
+            $args['preview'] = "$binPath unix://$socketPath preview {}";
+        }
+
+        if ($options instanceof Closure) {
+            $binPath = Socket::getBinPath();
+
+            $args['bind'] = implode(',', [
+                "change:reload($binPath unix://$socketPath reload)+first",
+                "start:reload($binPath unix://$socketPath reload)+first",
+            ]);
+
+            $args['disabled'] = true;
         }
 
         return $args;
@@ -300,14 +337,26 @@ class FuzzyFinder
         return !empty($this->arguments['multi']) || !empty($this->arguments['m']);
     }
 
-    /**
-     * @return array <int<0, max>, string>
-     */
-    protected function prepareArgumentsForCommand(array $arguments): array
+    protected function prepareInputForCommand($options): ?string
+    {
+        if ($options instanceof Closure) {
+            return null;
+        }
+
+        $optionsOnStart = $this->normalizeOptionsType($options);
+
+        $this->state->setAvailableOptions($optionsOnStart);
+
+        $preparedOptionsForCmd = $this->prepareOptionsForCommand($optionsOnStart);
+
+        return implode(PHP_EOL, $preparedOptionsForCmd);
+    }
+
+    protected function prepareArgumentsForCommand(): array
     {
         $commandArguments = [];
 
-        foreach ($arguments as $key => $value) {
+        foreach ($this->state->getArguments() as $key => $value) {
             if ($value !== false) {
                 $commandArguments[] = strlen($key) > 1 ? "--$key" : "-$key";
 
@@ -320,9 +369,6 @@ class FuzzyFinder
         return $commandArguments;
     }
 
-    /**
-     * @return array <string>
-     */
     protected static function resolveCommand(): array
     {
         if (static::$command !== null && static::$command !== []) {

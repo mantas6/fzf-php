@@ -19,6 +19,7 @@ This package allows you to create [`fzf`](https://github.com/junegunn/fzf) power
 - Inline `fzf` configuration
 - Option list styling
 - Selected option preview
+- Live option list reload
 - Laravel support
 
 ## Installation
@@ -250,6 +251,27 @@ $selected = fzf(
 ```
 
 Full set of variables are available at [`fzf` Reference - Environment variables exported to child processes](https://junegunn.github.io/fzf/reference/#environment-variables-exported-to-child-processes)
+
+### Live reload
+
+If options argument is callable, when input value is changed, the options list will be re-fetched.
+
+Input query can be accessed through the `FinderEnv` object.
+
+```php
+<?php
+use Mantas6\FzfPhp\ValueObjects\FinderEnv;
+
+$selected = fzf(
+    options: function (FinderEnv $env) {
+        return [
+            $env->query,
+            strtoupper($env->query),
+            strtolower($env->query),
+        ];
+    }
+);
+```
 
 ### Headers
 

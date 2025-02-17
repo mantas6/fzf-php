@@ -26,7 +26,7 @@ use Symfony\Component\String\UnicodeString;
  * @property-read string $previewLines Number of lines in the preview window
  * @property-read string $previewColumns Number of columns in the preview window
  */
-readonly class FinderEnv
+class FinderEnv
 {
     public function __construct(private array $env)
     {
